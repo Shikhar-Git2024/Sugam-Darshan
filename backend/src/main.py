@@ -1,5 +1,10 @@
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
+from config.database import Base, engine
+from models.user_model import User
+from models.booking_model import Booking
+from models.transaction_model import Transaction
+from models.waiting_list_model import Waitlist
 
 from routes.public_routes import (
     router as public_router
@@ -23,6 +28,8 @@ from routes.admin_routes import (
 app = FastAPI(
     title="Sugam Darshan API"
 )
+
+Base.metadata.create_all(bind=engine)
 
 app.add_middleware(
     CORSMiddleware,
