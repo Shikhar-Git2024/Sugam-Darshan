@@ -1,6 +1,10 @@
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
+
 from config.database import Base, engine
+from fastapi.staticfiles import StaticFiles
+import os
+
 from models.user_model import User
 from models.booking_model import Booking
 from models.transaction_model import Transaction
@@ -9,20 +13,37 @@ from models.waiting_list_model import WaitingList
 from routes.public_routes import (
     router as public_router
 )
+
 from routes.recommendation_routes import (
     router as recommendation_router
 )
+
 from routes.auth_routes import (
     router as auth_router
 )
+
 from routes.booking_routes import (
     router as booking_router
 )
+
 from routes.dashboard_routes import (
     router as dashboard_router
 )
+
 from routes.admin_routes import (
     router as admin_router
+)
+
+from routes.incident_routes import (
+    router as incident_router
+)
+
+from routes.notification_routes import (
+    router as notification_router
+)
+
+from routes.upload_routes import (
+    router as upload_router
 )
 
 app = FastAPI(
@@ -42,20 +63,46 @@ app.add_middleware(
 app.include_router(
     public_router
 )
+
 app.include_router(
     recommendation_router
 )
+
 app.include_router(
     auth_router
 )
+
 app.include_router(
     booking_router
 )
+
 app.include_router(
     dashboard_router
 )
+
 app.include_router(
     admin_router
+)
+
+app.include_router(
+    incident_router
+)
+os.makedirs(
+    "uploads",
+    exist_ok=True
+)
+app.mount(
+    "/uploads",
+    StaticFiles(directory="uploads"),
+    name="uploads"
+)
+
+app.include_router(
+    notification_router
+)
+
+app.include_router(
+    upload_router
 )
 
 
@@ -63,6 +110,5 @@ app.include_router(
 def root():
 
     return {
-        "message":
-        "Sugam Darshan Backend Running"
+        "message": "Sugam Darshan Backend Running"
     }

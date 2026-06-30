@@ -51,7 +51,8 @@ class AuthController:
         self,
         db,
         email,
-        password
+        password,
+        role
     ):
 
         user = (
@@ -71,10 +72,23 @@ class AuthController:
             password,
             user.password_hash
         ):
-
             return {
                 "success": False,
                 "message": "Invalid Password"
+            }
+        
+        if user.role != role:
+            
+            redirect_map = {
+                "DEVOTEE": "/devotee/login",
+                "AUTHORITY": "/authority/login",
+                "ADMIN": "/admin/login"
+            }
+
+            return {
+                "success": False,
+                "message": f"This account belongs to the {user.role} Portal.",
+                "redirect": redirect_map.get(user.role)
             }
 
         token = create_access_token(

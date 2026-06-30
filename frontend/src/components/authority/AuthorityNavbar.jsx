@@ -43,7 +43,7 @@ export default function AuthorityNavbar() {
 
       <div className="p-4 border-t border-slate-100">
         <button
-          onClick={() => { localStorage.clear(); navigate("/login"); }}
+          onClick={() => { localStorage.clear(); navigate("/authority/login"); }}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-red-50 hover:text-red-600 transition"
         >
           <LogOut size={20} />

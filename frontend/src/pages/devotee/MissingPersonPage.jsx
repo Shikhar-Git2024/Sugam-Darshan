@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import {
   Search, Upload, User, Phone, MapPin, Clock3, AlertCircle, CheckCircle2
 } from "lucide-react";
+import api from "../../services/api";
+import { useEffect } from "react";
 
 export default function MissingPersonPage() {
   const [form, setForm] = useState({
@@ -10,11 +12,135 @@ export default function MissingPersonPage() {
   });
   const [image, setImage] = useState(null);
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [trackingId, setTrackingId] = useState("");
 
-  const handleSubmit = (e) => {
+  const user = JSON.parse(
+    localStorage.getItem("user") || "{}"
+  );
+
+  const [coordinates, setCoordinates] = useState(null);
+
+  useEffect(() => {
+
+    if (!navigator.geolocation) return;
+
+    navigator.geolocation.getCurrentPosition(
+
+        (position) => {
+
+            setCoordinates({
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+            });
+
+        },
+
+        () => {
+
+            setCoordinates({
+                latitude: 0,
+                longitude: 0,
+            });
+
+        }
+
+    );
+
+  }, []);
+
+  async function handleSubmit(e) {
+
     e.preventDefault();
-    setSubmitted(true);
-  };
+
+    try {
+
+      setSending(true);
+
+      // ==============================
+      // Upload Missing Person Image
+      // ==============================
+      let imagePath = null;
+      if (image) {
+          const formData = new FormData();
+          formData.append(
+              "image",
+              image
+          );
+          const uploadResponse =
+              await api.post(
+                  "/upload/image",
+                  formData,
+                  {
+                      headers: {
+                          "Content-Type":
+                              "multipart/form-data",
+                      },
+                  }
+              );
+          imagePath =
+              uploadResponse.data.image_path;
+      }
+
+      const response = await api.post(
+        "/incident/create",
+        {
+          user_id: user.id,
+
+          type: "MISSING_PERSON",
+
+          category: "Missing Person",
+
+          description: form.description,
+
+          latitude: coordinates
+              ? coordinates.latitude.toString()
+              : "0",
+
+          longitude: coordinates
+              ? coordinates.longitude.toString()
+              : "0",
+
+          location_name: form.location,
+
+          missing_person_name: form.name,
+
+          missing_person_age: parseInt(form.age),
+
+          missing_person_gender: form.gender,
+
+          contact_number: form.contact,
+
+          last_seen_time: form.time,
+
+          image_path: imagePath,
+        }
+      );
+
+      console.log(response.data);
+      
+      setTrackingId(response.data.incident_id);
+
+      setSubmitted(true);
+
+    } catch (error) {
+
+      console.error(error);
+
+      const message =
+        error.response?.data?.detail ||
+        error.response?.data?.message ||
+        "Unable to submit missing person report.";
+
+      alert(message);
+
+    } finally {
+
+      setSending(false);
+
+    }
+
+  }
 
   if (submitted) {
     return (
@@ -25,7 +151,7 @@ export default function MissingPersonPage() {
           <p className="mt-2 text-slate-600">Your report has been dispatched to temple security and local authorities.</p>
           <div className="mt-8 bg-slate-50 rounded-2xl p-6 border border-slate-100">
             <p className="text-sm text-slate-500 uppercase tracking-widest font-bold">Tracking ID</p>
-            <p className="text-3xl font-bold text-orange-800 mt-1">MP-2026-001</p>
+            <p className="text-3xl font-bold text-orange-800 mt-1">{trackingId}</p>
           </div>
           <button onClick={() => window.location.reload()} className="mt-8 text-orange-800 font-semibold hover:underline">Back to Safety Portal</button>
         </motion.div>
@@ -58,7 +184,26 @@ export default function MissingPersonPage() {
               <input required type="number" className="w-full bg-slate-50 border-none rounded-xl p-4 focus:ring-2 focus:ring-orange-500" placeholder="e.g. 12" onChange={e => setForm({...form, age: e.target.value})} />
             </div>
           </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              Gender
+            </label>
 
+            <select
+              className="w-full bg-slate-50 rounded-xl p-4"
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  gender: e.target.value,
+                })
+              }
+            >
+              <option value="">Select Gender</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+            </select>
+          </div>
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-2">Last Seen Location</label>
             <div className="relative">
@@ -88,8 +233,13 @@ export default function MissingPersonPage() {
             <input type="file" accept="image/*" onChange={e => setImage(e.target.files[0])} className="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700" />
           </div>
 
-          <button type="submit" className="w-full bg-gradient-to-r from-orange-600 to-red-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-orange-200 hover:from-orange-700 hover:to-red-700 transition-all">
-            Submit Missing Person Report
+          <button type="submit"
+            disabled={sending}
+            className="w-full bg-gradient-to-r from-orange-600 to-red-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-orange-200 hover:from-orange-700 hover:to-red-700 transition-all disabled:opacity-50"
+          >
+            {sending
+              ? "Submitting..."
+              : "Submit Missing Person Report"}
           </button>
         </form>
       </div>

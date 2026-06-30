@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Bell,
@@ -8,14 +8,15 @@ import {
   CheckCircle2,
   Megaphone,
   Clock3,
+  Loader2,
 } from "lucide-react";
 
-export default function NotificationBroadcastPage() {
-  const [title, setTitle] =
-    useState("");
+import api from "../../services/api";
 
-  const [message, setMessage] =
-    useState("");
+export default function NotificationBroadcastPage() {
+
+  const [title, setTitle] = useState("");
+  const [message, setMessage] = useState("");
 
   const [audience, setAudience] =
     useState("ALL");
@@ -23,45 +24,199 @@ export default function NotificationBroadcastPage() {
   const [priority, setPriority] =
     useState("NORMAL");
 
+  const [sending, setSending] =
+    useState(false);
+
+  const [loading, setLoading] =
+    useState(true);
+
   const [sentNotifications, setSentNotifications] =
-    useState([
-      {
-        id: 1,
-        title: "Heavy Crowd Expected",
-        audience: "ALL",
-        priority: "HIGH",
-        time: "10:30 AM",
-      },
-      {
-        id: 2,
-        title: "Gate 2 Opened",
-        audience: "ALL",
-        priority: "NORMAL",
-        time: "09:12 AM",
-      },
-    ]);
+    useState([]);
 
-  function handleBroadcast() {
-    if (!title || !message) return;
+  useEffect(() => {
 
-    const newNotification = {
-      id: Date.now(),
-      title,
-      audience,
-      priority,
-      time: new Date().toLocaleTimeString(),
-    };
+    loadBroadcasts();
 
-    setSentNotifications([
-      newNotification,
-      ...sentNotifications,
-    ]);
+  }, []);
 
-    setTitle("");
-    setMessage("");
+  async function loadBroadcasts() {
+
+    try {
+
+      const response =
+        await api.get("/notifications/");
+
+      const broadcasts =
+        response.data.notifications.filter(
+          (notification) =>
+            notification.type ===
+            "AUTHORITY"
+        );
+
+      setSentNotifications(
+        broadcasts
+      );
+
+    } catch (error) {
+
+      console.error(error);
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
+  }
+
+  async function handleBroadcast() {
+
+    if (
+      !title.trim() ||
+      !message.trim()
+    ) {
+
+      alert(
+        "Please fill all fields."
+      );
+
+      return;
+
+    }
+
+    try {
+
+      setSending(true);
+
+      await api.post(
+        "/notifications/create",
+        {
+
+          user_id: null,
+
+          title,
+
+          message,
+
+          type: "AUTHORITY",
+
+          priority,
+
+          audience,
+
+        }
+      );
+
+      const newNotification = {
+
+        id: Date.now(),
+
+        title,
+
+        message,
+
+        audience,
+
+        priority,
+
+        type: "AUTHORITY",
+
+        created_at:
+          new Date().toISOString(),
+
+      };
+
+      setSentNotifications(
+        (prev) => [
+          newNotification,
+          ...prev,
+        ]
+      );
+
+      setTitle("");
+
+      setMessage("");
+
+      setAudience("ALL");
+
+      setPriority("NORMAL");
+
+      alert(
+        "Broadcast sent successfully."
+      );
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        "Unable to send broadcast."
+      );
+
+    } finally {
+
+      setSending(false);
+
+    }
+
+  }
+
+  function getPriorityColor(
+    priority
+  ) {
+
+    switch (priority) {
+
+      case "CRITICAL":
+
+        return "bg-red-100 text-red-700";
+
+      case "HIGH":
+
+        return "bg-orange-100 text-orange-700";
+
+      case "LOW":
+
+        return "bg-blue-100 text-blue-700";
+
+      default:
+
+        return "bg-green-100 text-green-700";
+
+    }
+
+  }
+
+  function formatTime(date) {
+
+    if (!date)
+      return "";
+
+    return new Date(
+      date
+    ).toLocaleString();
+
+  }
+
+    if (loading) {
+
+    return (
+
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+
+        <Loader2
+          className="animate-spin text-violet-600"
+          size={40}
+        />
+
+      </div>
+
+    );
+
   }
 
   return (
+
     <div className="min-h-screen bg-slate-50 p-8">
 
       <div className="max-w-7xl mx-auto">
@@ -71,13 +226,18 @@ export default function NotificationBroadcastPage() {
         <div className="mb-10">
 
           <h1 className="text-5xl font-bold">
+
             Notification Broadcast Center
+
           </h1>
 
           <p className="text-slate-600 mt-3">
+
             Send important updates,
-            crowd alerts and emergency
-            announcements to devotees.
+            emergency announcements,
+            crowd alerts and public
+            notifications to devotees.
+
           </p>
 
         </div>
@@ -87,29 +247,35 @@ export default function NotificationBroadcastPage() {
         <div className="grid md:grid-cols-4 gap-6 mb-10">
 
           <StatCard
-            title="Broadcast Today"
-            value="42"
+            title="Total Broadcasts"
+            value={sentNotifications.length}
             icon={<Megaphone />}
             color="bg-violet-500"
           />
 
           <StatCard
             title="Recipients"
-            value="12,846"
+            value="All Users"
             icon={<Users />}
             color="bg-blue-500"
           />
 
           <StatCard
-            title="Emergency Alerts"
-            value="3"
+            title="Critical Alerts"
+            value={
+              sentNotifications.filter(
+                (n) =>
+                  n.priority ===
+                  "CRITICAL"
+              ).length
+            }
             icon={<AlertTriangle />}
             color="bg-red-500"
           />
 
           <StatCard
             title="Delivered"
-            value="99.2%"
+            value="100%"
             icon={<CheckCircle2 />}
             color="bg-green-500"
           />
@@ -129,7 +295,9 @@ export default function NotificationBroadcastPage() {
                 <Bell className="text-violet-600" />
 
                 <h2 className="text-2xl font-bold">
+
                   Create Broadcast
+
                 </h2>
 
               </div>
@@ -139,24 +307,25 @@ export default function NotificationBroadcastPage() {
                 <div>
 
                   <label className="block text-sm font-medium mb-2">
+
                     Notification Title
+
                   </label>
 
                   <input
+
                     value={title}
+
                     onChange={(e) =>
                       setTitle(
                         e.target.value
                       )
                     }
-                    className="
-                      w-full
-                      border
-                      rounded-xl
-                      px-4
-                      py-3
-                    "
-                    placeholder="Temple Notice..."
+
+                    className="w-full border rounded-xl px-4 py-3"
+
+                    placeholder="Temple Notice"
+
                   />
 
                 </div>
@@ -164,39 +333,47 @@ export default function NotificationBroadcastPage() {
                 <div>
 
                   <label className="block text-sm font-medium mb-2">
+
                     Audience
+
                   </label>
 
                   <select
+
                     value={audience}
+
                     onChange={(e) =>
                       setAudience(
                         e.target.value
                       )
                     }
-                    className="
-                      w-full
-                      border
-                      rounded-xl
-                      px-4
-                      py-3
-                    "
+
+                    className="w-full border rounded-xl px-4 py-3"
+
                   >
 
                     <option value="ALL">
-                      All Devotees
+
+                      All Users
+
                     </option>
 
-                    <option value="TODAY">
-                      Today's Visitors
+                    <option value="DEVOTEE">
+
+                      Devotees
+
                     </option>
 
-                    <option value="WAITLIST">
-                      Waitlist
+                    <option value="AUTHORITY">
+
+                      Authorities
+
                     </option>
 
-                    <option value="VIP">
-                      VIP Visitors
+                    <option value="ADMIN">
+
+                      Admin
+
                     </option>
 
                   </select>
@@ -206,35 +383,47 @@ export default function NotificationBroadcastPage() {
                 <div>
 
                   <label className="block text-sm font-medium mb-2">
+
                     Priority
+
                   </label>
 
                   <select
+
                     value={priority}
+
                     onChange={(e) =>
                       setPriority(
                         e.target.value
                       )
                     }
-                    className="
-                      w-full
-                      border
-                      rounded-xl
-                      px-4
-                      py-3
-                    "
+
+                    className="w-full border rounded-xl px-4 py-3"
+
                   >
 
+                    <option value="LOW">
+
+                      LOW
+
+                    </option>
+
                     <option value="NORMAL">
-                      Normal
+
+                      NORMAL
+
                     </option>
 
                     <option value="HIGH">
-                      High
+
+                      HIGH
+
                     </option>
 
                     <option value="CRITICAL">
-                      Critical
+
+                      CRITICAL
+
                     </option>
 
                   </select>
@@ -244,48 +433,68 @@ export default function NotificationBroadcastPage() {
                 <div>
 
                   <label className="block text-sm font-medium mb-2">
+
                     Message
+
                   </label>
 
                   <textarea
-                    rows="5"
+
+                    rows={6}
+
                     value={message}
+
                     onChange={(e) =>
                       setMessage(
                         e.target.value
                       )
                     }
-                    className="
-                      w-full
-                      border
-                      rounded-xl
-                      px-4
-                      py-3
-                    "
-                    placeholder="Write your announcement..."
+
+                    className="w-full border rounded-xl px-4 py-3"
+
+                    placeholder="Write your broadcast message..."
+
                   />
 
                 </div>
 
                 <button
+
+                  disabled={sending}
+
                   onClick={
                     handleBroadcast
                   }
-                  className="
-                    w-full
-                    py-4
-                    rounded-xl
-                    bg-violet-600
-                    text-white
-                    font-semibold
-                    flex
-                    items-center
-                    justify-center
-                    gap-2
-                  "
+
+                  className="w-full py-4 rounded-xl bg-violet-600 text-white font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
+
                 >
-                  <Send size={18} />
-                  Broadcast Notification
+
+                  {sending ? (
+
+                    <Loader2
+                      className="animate-spin"
+                      size={18}
+                    />
+
+                  ) : (
+
+                    <Send
+                      size={18}
+                    />
+
+                  )}
+
+                  {
+
+                    sending
+
+                      ? "Sending..."
+
+                      : "Broadcast Notification"
+
+                  }
+
                 </button>
 
               </div>
@@ -294,7 +503,7 @@ export default function NotificationBroadcastPage() {
 
           </div>
 
-          {/* History */}
+                    {/* Broadcast History */}
 
           <div className="lg:col-span-3">
 
@@ -305,88 +514,155 @@ export default function NotificationBroadcastPage() {
                 <Clock3 className="text-violet-600" />
 
                 <h2 className="text-2xl font-bold">
+
                   Broadcast History
+
                 </h2>
 
               </div>
 
-              <div className="space-y-4">
+              {
 
-                {sentNotifications.map(
-                  (notification) => (
+                sentNotifications.length === 0 ? (
 
-                    <motion.div
-                      key={
-                        notification.id
-                      }
-                      whileHover={{
-                        y: -2,
-                      }}
-                      className="
-                        border
-                        rounded-2xl
-                        p-5
-                      "
-                    >
+                  <div className="text-center py-20">
 
-                      <div className="flex justify-between items-center flex-wrap gap-3">
+                    <Megaphone
+                      size={60}
+                      className="mx-auto text-slate-300"
+                    />
 
-                        <div>
+                    <h3 className="text-xl font-bold mt-5">
 
-                          <h3 className="font-bold text-lg">
-                            {
-                              notification.title
-                            }
-                          </h3>
+                      No Broadcasts Yet
 
-                          <p className="text-slate-500 text-sm mt-1">
-                            Audience:
-                            {" "}
-                            {
-                              notification.audience
-                            }
-                          </p>
+                    </h3>
 
-                        </div>
+                    <p className="text-slate-500 mt-2">
 
-                        <span
-                          className={`
-                            px-3
-                            py-1
-                            rounded-full
-                            text-sm
+                      Broadcasts sent by authorities
+                      will appear here.
 
-                            ${
-                              notification.priority ===
-                              "CRITICAL"
-                                ? "bg-red-100 text-red-700"
-                                : notification.priority ===
-                                  "HIGH"
-                                ? "bg-orange-100 text-orange-700"
-                                : "bg-green-100 text-green-700"
-                            }
-                          `}
-                        >
-                          {
-                            notification.priority
-                          }
-                        </span>
+                    </p>
 
-                      </div>
+                  </div>
 
-                      <p className="text-slate-400 text-sm mt-3">
-                        Sent at{" "}
-                        {
-                          notification.time
-                        }
-                      </p>
+                ) : (
 
-                    </motion.div>
+                  <div className="space-y-4">
 
-                  )
-                )}
+                    {
 
-              </div>
+                      sentNotifications.map(
+                        (notification) => (
+
+                          <motion.div
+
+                            key={notification.id}
+
+                            whileHover={{
+                              y: -2,
+                            }}
+
+                            className="border rounded-2xl p-5"
+
+                          >
+
+                            <div className="flex justify-between flex-wrap gap-4">
+
+                              <div>
+
+                                <h3 className="font-bold text-lg">
+
+                                  {notification.title}
+
+                                </h3>
+
+                                <p className="text-slate-600 mt-2">
+
+                                  {notification.message}
+
+                                </p>
+
+                                <div className="flex gap-5 mt-4 text-sm text-slate-500">
+
+                                  <span>
+
+                                    Audience :
+                                    {" "}
+                                    {notification.audience}
+
+                                  </span>
+
+                                  <span>
+
+                                    Type :
+                                    {" "}
+                                    {notification.type}
+
+                                  </span>
+
+                                </div>
+
+                              </div>
+
+                              <div className="text-right">
+
+                                <span
+
+                                  className={`
+
+                                    px-3
+
+                                    py-1
+
+                                    rounded-full
+
+                                    text-sm
+
+                                    font-semibold
+
+                                    ${getPriorityColor(
+                                      notification.priority
+                                    )}
+
+                                  `}
+
+                                >
+
+                                  {notification.priority}
+
+                                </span>
+
+                                <p className="text-xs text-slate-400 mt-4">
+
+                                  {
+
+                                    formatTime(
+                                      notification.created_at
+                                    )
+
+                                  }
+
+                                </p>
+
+                              </div>
+
+                            </div>
+
+                          </motion.div>
+
+                        )
+
+                      )
+
+                    }
+
+                  </div>
+
+                )
+
+              }
 
             </div>
 
@@ -397,41 +673,69 @@ export default function NotificationBroadcastPage() {
       </div>
 
     </div>
+
   );
+
 }
 
 function StatCard({
+
   title,
+
   value,
+
   icon,
+
   color,
+
 }) {
+
   return (
+
     <div className="bg-white rounded-3xl p-6 shadow-sm">
 
       <div
+
         className={`
+
           h-12
+
           w-12
+
           rounded-xl
+
           flex
+
           items-center
+
           justify-center
+
           text-white
+
           ${color}
+
         `}
+
       >
+
         {icon}
+
       </div>
 
       <p className="mt-4 text-slate-500">
+
         {title}
+
       </p>
 
       <h2 className="text-3xl font-bold mt-2">
+
         {value}
+
       </h2>
 
     </div>
+
   );
+
 }
