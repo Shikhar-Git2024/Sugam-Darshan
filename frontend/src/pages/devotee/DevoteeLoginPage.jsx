@@ -25,27 +25,35 @@ export default function DevoteeLoginPage() {
 
   // Enforce session check on mount - handles potential crashes elegantly
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token =
+      localStorage.getItem("token") ||
+      sessionStorage.getItem("token");
+
     let user = null;
-    
+
     try {
-      const storedUser = localStorage.getItem("user");
+      const storedUser =
+        localStorage.getItem("user") ||
+        sessionStorage.getItem("user");
+
       if (storedUser && storedUser !== "undefined") {
         user = JSON.parse(storedUser);
       }
     } catch {
       localStorage.removeItem("user");
+      sessionStorage.removeItem("user");
       user = null;
     }
 
     if (token && user?.role) {
-      // Intercept and show user they are already logged in instead of breaking routing or silent redirection
+      // Intercept and show user they are already logged in
       setActiveSessionUser(user);
     }
   }, []);
 
   const handleGlobalLogout = () => {
     localStorage.clear();
+    sessionStorage.clear();
     setActiveSessionUser(null);
     setError("");
   };
@@ -70,9 +78,21 @@ export default function DevoteeLoginPage() {
       const data = response?.data;
 
       if (data && data.access_token) {
-        localStorage.setItem("token", data.access_token);
-        localStorage.setItem("user", JSON.stringify(data.user || {}));
-        navigate("/devotee/dashboard");
+
+
+        if (rememberMe) {
+          localStorage.setItem("token", data.access_token);
+          localStorage.setItem("user", JSON.stringify(data.user || {}));
+          } 
+        else 
+          {
+          sessionStorage.setItem("token", data.access_token);
+          sessionStorage.setItem("user", JSON.stringify(data.user || {}));
+          }
+
+          navigate("/devotee/dashboard");
+
+
       } else {
         setError("Authentication failed. No access token received.");
       }

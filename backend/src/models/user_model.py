@@ -48,3 +48,13 @@ class User(Base):
         DateTime,
         default=datetime.utcnow
     )
+    reset_token = Column(
+        String,
+        nullable=True
+    )
+
+    reset_token_expiry = Column(
+        DateTime,
+        nullable=True
+    )
+    
