@@ -1,9 +1,18 @@
 from sqlalchemy.orm import Session
 
+import secrets
+import asyncio
+from datetime import datetime, timedelta
+
 from models.user_model import User
-from utils.security import hash_password
-from utils.security import verify_password
+
+from utils.security import (
+    hash_password,
+    verify_password
+)
+
 from utils.jwt_handler import create_access_token
+from utils.email_sender import send_reset_email
 
 
 class AuthController:
@@ -24,7 +33,6 @@ class AuthController:
         )
 
         if existing_user:
-
             return {
                 "success": False,
                 "message": "Email already registered"
@@ -47,9 +55,10 @@ class AuthController:
             "message": "User registered successfully",
             "user_id": new_user.id
         }
+
     def login_user(
         self,
-        db,
+        db: Session,
         email,
         password
     ):
@@ -61,7 +70,6 @@ class AuthController:
         )
 
         if not user:
-
             return {
                 "success": False,
                 "message": "Invalid Email"
@@ -71,7 +79,6 @@ class AuthController:
             password,
             user.password_hash
         ):
-
             return {
                 "success": False,
                 "message": "Invalid Password"
@@ -96,5 +103,86 @@ class AuthController:
                 "role": user.role
             }
         }
+
+    def forgot_password(
+        self,
+        db: Session,
+        email
+    ):
+
+        user = (
+            db.query(User)
+            .filter(User.email == email)
+            .first()
+        )
+
+        if not user:
+            return {
+                "success": False,
+                "message": "No account found with this email."
+            }
+
+        token = secrets.token_urlsafe(32)
+
+        user.reset_token = token
+        user.reset_token_expiry = (
+            datetime.utcnow() + timedelta(minutes=30)
+        )
+
+        db.commit()
+
+        reset_link = (
+            f"http://localhost:5173/reset-password/{token}"
+        )
+
+        asyncio.run(
+            send_reset_email(
+                user.email,
+                reset_link
+            )
+        )
+
+        return {
+            "success": True,
+            "message": "Password reset email sent successfully."
+        }
+
+    def reset_password(
+        self,
+        db: Session,
+        token,
+        new_password
+    ):
+
+        user = (
+            db.query(User)
+            .filter(User.reset_token == token)
+            .first()
+        )
+
+        if not user:
+            return {
+                "success": False,
+                "message": "Invalid reset token."
+            }
+
+        if datetime.utcnow() > user.reset_token_expiry:
+            return {
+                "success": False,
+                "message": "Reset token has expired."
+            }
+
+        user.password_hash = hash_password(new_password)
+
+        user.reset_token = None
+        user.reset_token_expiry = None
+
+        db.commit()
+
+        return {
+            "success": True,
+            "message": "Password reset successfully."
+        }
+
 
 auth_controller = AuthController()

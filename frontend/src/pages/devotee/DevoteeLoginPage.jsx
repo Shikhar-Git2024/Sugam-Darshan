@@ -19,7 +19,10 @@ export default function DevoteeLoginPage() {
 
   // SAFEGUARD: Only redirect if a valid token exists (checking for "undefined" strings)
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token =
+    localStorage.getItem("token") ||
+    sessionStorage.getItem("token");
+    
     if (token && token !== "undefined" && token !== "null") {
       navigate("/devotee/dashboard", { replace: true });
     }
@@ -36,9 +39,21 @@ export default function DevoteeLoginPage() {
 
       // VALIDATION: Ensure the backend actually sent a token back before proceeding
       if (data && data.access_token) {
-        localStorage.setItem("token", data.access_token);
-        localStorage.setItem("user", JSON.stringify(data.user || {}));
-        navigate("/devotee/dashboard");
+
+
+        if (rememberMe) {
+          localStorage.setItem("token", data.access_token);
+          localStorage.setItem("user", JSON.stringify(data.user || {}));
+          } 
+        else 
+          {
+          sessionStorage.setItem("token", data.access_token);
+          sessionStorage.setItem("user", JSON.stringify(data.user || {}));
+          }
+
+          navigate("/devotee/dashboard");
+
+
       } else {
         // If the server responded with a 200 OK but no token, handle it safely
         setError("Authentication failed. No access token received.");

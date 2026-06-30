@@ -5,7 +5,8 @@ export default function ProtectedRoute({
 }) {
 
   const token =
-    localStorage.getItem("token");
+    localStorage.getItem("token") ||
+    sessionStorage.getItem("token");
 
   if (!token) {
     return (
