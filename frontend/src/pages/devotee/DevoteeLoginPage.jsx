@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, ArrowLeft, CheckCircle2 } from "lucide-react";
 import api from "../../services/api";
+import GoogleSignInButton from "../../components/GoogleSignInButton";
 
 export default function DevoteeLoginPage() {
   const navigate = useNavigate();
@@ -31,41 +32,47 @@ export default function DevoteeLoginPage() {
     setError("");
 
     try {
-      const response = await api.post("/login", { email, password });
-      const data = response?.data;
+  const response = await api.post("/login", {
+    email,
+    password,
+  });
 
-      // VALIDATION: Ensure the backend actually sent a token back before proceeding
-      if (data && data.access_token) {
-        localStorage.setItem("token", data.access_token);
-        localStorage.setItem("user", JSON.stringify(data.user || {}));
-        navigate("/devotee/dashboard");
-      } else {
-        // If the server responded with a 200 OK but no token, handle it safely
-        setError("Authentication failed. No access token received.");
-      }
+  const data = response.data;
 
-    } catch (err) {
-      console.error("Login Error Catch:", err);
-      
-      // DEFENSIVE EXTRACTION: Safely extract error message to prevent React crashes
-      let errorMessage = "Invalid Email or Password";
-      
-      if (err?.response?.data) {
-        if (typeof err.response.data.detail === "string") {
-          errorMessage = err.response.data.detail;
-        } else if (typeof err.response.data.message === "string") {
-          errorMessage = err.response.data.message;
-        } else if (err.response.data.error) {
-          errorMessage = typeof err.response.data.error === "string" 
-            ? err.response.data.error 
-            : JSON.stringify(err.response.data.error);
-        }
-      }
-      
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
-    }
+  if (data.success && data.access_token) {
+
+    localStorage.setItem("token", data.access_token);
+    localStorage.setItem(
+      "user",
+      JSON.stringify(data.user)
+    );
+
+    navigate("/devotee/dashboard");
+
+  } else {
+
+    setError(
+      data.message ||
+      "Authentication failed."
+    );
+
+  }
+
+} catch (err) {
+
+  console.error(err);
+
+  setError(
+    err.response?.data?.message ||
+    err.response?.data?.detail ||
+    "Server error. Please try again."
+  );
+
+} finally {
+
+  setLoading(false);
+
+}
   }
 
   return (
@@ -224,6 +231,18 @@ export default function DevoteeLoginPage() {
             >
               {loading ? "Signing In..." : "Login"}
             </motion.button>
+
+            <div className="my-6 flex items-center">
+              <div className="flex-1 border-t border-slate-700"></div>
+
+              <span className="mx-3 text-xs text-slate-500">
+                OR
+              </span>
+
+              <div className="flex-1 border-t border-slate-700"></div>
+            </div>
+
+            <GoogleSignInButton />
 
             <p className="mt-6 text-center text-xs text-slate-400">
               New to the platform?{" "}

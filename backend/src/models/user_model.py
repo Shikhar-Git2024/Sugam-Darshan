@@ -32,12 +32,28 @@ class User(Base):
     phone = Column(
         String,
         unique=True,
-        nullable=False
+        nullable=True      # Changed
     )
 
     password_hash = Column(
         String,
-        nullable=False
+        nullable=True      # Changed
+    )
+
+    auth_provider = Column(
+        String,
+        default="LOCAL"
+    )
+
+    google_id = Column(
+        String,
+        unique=True,
+        nullable=True
+    )
+
+    profile_picture = Column(
+        String,
+        nullable=True
     )
 
     role = Column(

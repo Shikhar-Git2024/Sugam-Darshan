@@ -4,7 +4,7 @@ from config.database import Base, engine
 from models.user_model import User
 from models.booking_model import Booking
 from models.transaction_model import Transaction
-from models.waiting_list_model import Waitlist
+from models.waiting_list_model import WaitingList
 
 from routes.public_routes import (
     router as public_router

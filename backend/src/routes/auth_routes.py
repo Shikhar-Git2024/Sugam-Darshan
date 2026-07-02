@@ -7,10 +7,9 @@ from config.database import get_db
 
 from schemas.user_schema import UserRegister
 from schemas.login_schema import LoginRequest
+from schemas.google_login_schema import GoogleLoginRequest
 
-from controllers.auth_controller import (
-    auth_controller
-)
+from controllers.auth_controller import auth_controller
 
 router = APIRouter()
 
@@ -29,6 +28,7 @@ def register_user(
         password=user.password
     )
 
+
 @router.post("/login")
 def login_user(
     login_data: LoginRequest,
@@ -39,4 +39,16 @@ def login_user(
         db=db,
         email=login_data.email,
         password=login_data.password
+    )
+
+
+@router.post("/google-login")
+def google_login(
+    login_data: GoogleLoginRequest,
+    db: Session = Depends(get_db)
+):
+
+    return auth_controller.google_login(
+        db=db,
+        google_token=login_data.token
     )
