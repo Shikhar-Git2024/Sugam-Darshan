@@ -40,6 +40,7 @@ import AdminRoute from "../components/auth/AdminRoute";
 import AdminLoginPage from "../pages/admin/AdminLoginPage";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import AuthorityManagementPage from "../pages/admin/AuthorityManagementPage";
+import DevoteeResetPassword from "../pages/devotee/DevoteeResetPassword";
 
 export default function AppRoutes() {
   return (
@@ -68,7 +69,10 @@ export default function AppRoutes() {
           path="/forgot-password"
           element={<ForgotPasswordPage />}
         />
-
+        <Route
+          path="/reset-password/:token"
+          element={<DevoteeResetPassword />}
+        />
         {/* Secured Internal Dashboards */}
         <Route
           path="/devotee/dashboard"

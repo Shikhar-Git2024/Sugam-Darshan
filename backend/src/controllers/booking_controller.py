@@ -6,6 +6,7 @@ from utils.temple_slots import (
     DARSHAN_SLOTS,
     AARTI_SLOTS
 )
+from services.notification_service import NotificationService
 
 class BookingController:
 
@@ -57,6 +58,16 @@ class BookingController:
             db.add(wait_entry)
             db.commit()
 
+            # Trigger Waitlist Notification
+            NotificationService.send(
+                db=db,
+                title="Booking Waitlisted",
+                message=f"Your {booking_type} booking request for {visit_date} is waitlisted at position #{position}.",
+                user_id=user_id,
+                type="BOOKING",
+                priority="NORMAL"
+            )
+
             return {"success": True, "status": "WAITLISTED", "position": position}
 
         booking = Booking(
@@ -87,6 +98,16 @@ class BookingController:
 
         transaction.transaction_id = self.generate_transaction_id(transaction.id)
         db.commit()
+
+        # Trigger Confirmed Booking Notification
+        NotificationService.send(
+            db=db,
+            title="Booking Confirmed",
+            message=f"Your {booking_type} slot booking ({booking.booking_id}) for {visit_date} is confirmed.",
+            user_id=user_id,
+            type="BOOKING",
+            priority="NORMAL"
+        )
 
         return {
             "success": True,
@@ -147,6 +168,16 @@ class BookingController:
         booking.booking_status = "CANCELLED"
         db.commit()
 
+        # Notify user about cancellation
+        NotificationService.send(
+            db=db,
+            title="Booking Cancelled",
+            message=f"Your booking {booking_id} has been successfully cancelled.",
+            user_id=booking.user_id,
+            type="BOOKING",
+            priority="NORMAL"
+        )
+
         waitlist_user = (
             db.query(WaitingList)
             .filter(WaitingList.visit_date == booking.visit_date, WaitingList.slot == booking.slot)
@@ -188,6 +219,16 @@ class BookingController:
             db.delete(waitlist_user)
             db.commit()
 
+            # Trigger Waitlist Promotion Notification
+            NotificationService.send(
+                db=db,
+                title="Waitlist Ticket Promoted!",
+                message=f"Good news! Your waitlisted position has been upgraded. Your confirmed booking ID is {promoted_booking.booking_id}.",
+                user_id=waitlist_user.user_id,
+                type="BOOKING",
+                priority="HIGH"
+            )
+
             promotion_message = f"Waitlist User Promoted: {promoted_booking.booking_id}"
 
         return {
@@ -196,29 +237,13 @@ class BookingController:
             "promotion": promotion_message
         }
 
-    def get_available_slots(
-        self,
-        db,
-        visit_date,
-        booking_type
-    ):
-
-        slots = (
-            DARSHAN_SLOTS
-            if booking_type == "DARSHAN"
-            else AARTI_SLOTS
-        )
-
+    def get_available_slots(self, db, visit_date, booking_type):
+        slots = DARSHAN_SLOTS if booking_type == "DARSHAN" else AARTI_SLOTS
         result = []
 
         for slot in slots:
-
             booked = (
-                db.query(
-                    func.sum(
-                        Booking.people_count
-                    )
-                )
+                db.query(func.sum(Booking.people_count))
                 .filter(
                     Booking.visit_date == visit_date,
                     Booking.slot == slot,
@@ -227,19 +252,14 @@ class BookingController:
                 .scalar()
             ) or 0
 
-            remaining = (
-                self.SLOT_CAPACITY - booked
-            )
+            remaining = self.SLOT_CAPACITY - booked
 
             if booked < 1000:
                 crowd_level = "LOW"
-
             elif booked < 2500:
                 crowd_level = "MODERATE"
-
             elif booked < 4000:
                 crowd_level = "BUSY"
-
             else:
                 crowd_level = "HEAVY"
 

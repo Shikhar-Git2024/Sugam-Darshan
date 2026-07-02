@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Mail, Lock, Eye, EyeOff, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Mail, Lock, Eye, EyeOff, ArrowLeft, CheckCircle2, AlertTriangle, LogOut, LayoutDashboard } from "lucide-react";
 import api from "../../services/api";
 import GoogleSignInButton from "../../components/GoogleSignInButton";
 
@@ -15,16 +15,59 @@ export default function DevoteeLoginPage() {
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showRolePopup, setShowRolePopup] = useState(false);
+  const [redirectPath, setRedirectPath] = useState("");
+  const [roleMessage, setRoleMessage] = useState("");
+  
+  // Interceptor State for existing active session
+  const [activeSessionUser, setActiveSessionUser] = useState(null);
 
   const registerSuccessMessage = location.state?.successMsg;
 
-  // SAFEGUARD: Only redirect if a valid token exists (checking for "undefined" strings)
+  // Enforce session check on mount - handles potential crashes elegantly
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token && token !== "undefined" && token !== "null") {
-      navigate("/devotee/dashboard", { replace: true });
+    const token =
+      localStorage.getItem("token") ||
+      sessionStorage.getItem("token");
+
+    let user = null;
+
+    try {
+      const storedUser =
+        localStorage.getItem("user") ||
+        sessionStorage.getItem("user");
+
+      if (storedUser && storedUser !== "undefined") {
+        user = JSON.parse(storedUser);
+      }
+    } catch {
+      localStorage.removeItem("user");
+      sessionStorage.removeItem("user");
+      user = null;
     }
-  }, [navigate]);
+
+    if (token && user?.role) {
+      // Intercept and show user they are already logged in
+      setActiveSessionUser(user);
+    }
+  }, []);
+
+  const handleGlobalLogout = () => {
+    localStorage.clear();
+    sessionStorage.clear();
+    setActiveSessionUser(null);
+    setError("");
+  };
+
+  const handleGoToDashboard = () => {
+    if (!activeSessionUser) return;
+    const pathMap = {
+      DEVOTEE: "/devotee/dashboard",
+      AUTHORITY: "/authority/dashboard",
+      ADMIN: "/admin/dashboard"
+    };
+    navigate(pathMap[activeSessionUser.role] || "/", { replace: true });
+  };
 
   async function handleLogin(e) {
     e.preventDefault();
@@ -32,47 +75,78 @@ export default function DevoteeLoginPage() {
     setError("");
 
     try {
-  const response = await api.post("/login", {
-    email,
-    password,
-  });
 
-  const data = response.data;
+            const response = await api.post("/login", {
+        email,
+        password,
+        role: "DEVOTEE",
+      });
 
-  if (data.success && data.access_token) {
+      const data = response?.data;
 
-    localStorage.setItem("token", data.access_token);
-    localStorage.setItem(
-      "user",
-      JSON.stringify(data.user)
-    );
+      if (data && data.access_token) {
 
-    navigate("/devotee/dashboard");
+        if (rememberMe) {
+          localStorage.setItem("token", data.access_token);
+          localStorage.setItem("user", JSON.stringify(data.user || {}));
+        } else {
+          sessionStorage.setItem("token", data.access_token);
+          sessionStorage.setItem("user", JSON.stringify(data.user || {}));
+        }
 
-  } else {
+        navigate("/devotee/dashboard");
 
-    setError(
-      data.message ||
-      "Authentication failed."
-    );
+      } else {
 
-  }
+        setError("Authentication failed. No access token received.");
 
-} catch (err) {
+      }
 
-  console.error(err);
+    } catch (err) {
 
-  setError(
-    err.response?.data?.message ||
-    err.response?.data?.detail ||
-    "Server error. Please try again."
-  );
+      console.error("Login Error Catch:", err);
 
-} finally {
+      let errorMessage = "Invalid Email or Password";
 
-  setLoading(false);
+      if (err?.response?.data) {
 
-}
+        if (typeof err.response.data.detail === "string") {
+
+          errorMessage = err.response.data.detail;
+
+        } else if (typeof err.response.data.message === "string") {
+
+          errorMessage = err.response.data.message;
+
+        } else if (err.response.data.error) {
+
+          errorMessage =
+            typeof err.response.data.error === "string"
+              ? err.response.data.error
+              : JSON.stringify(err.response.data.error);
+
+        }
+
+      }
+
+      if (err?.response?.data?.redirect) {
+
+        setRedirectPath(err.response.data.redirect);
+        setRoleMessage(err.response.data.message);
+        setShowRolePopup(true);
+
+      } else {
+
+        setError(errorMessage);
+
+      }
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
   }
 
   return (
@@ -87,6 +161,49 @@ export default function DevoteeLoginPage() {
         <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
         Back To Home
       </button>
+
+      {/* Already Logged In Dialog Interceptor */}
+      <AnimatePresence>
+        {activeSessionUser && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4"
+          >
+            <motion.div 
+              initial={{ scale: 0.95, y: 10 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 10 }}
+              className="w-full max-w-md bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-2xl text-center"
+            >
+              <div className="mx-auto w-12 h-12 rounded-full bg-violet-500/10 flex items-center justify-center text-violet-400 mb-4">
+                <AlertTriangle size={24} />
+              </div>
+              <h3 className="text-xl font-bold text-white tracking-tight">Already Logged In</h3>
+              <p className="mt-2 text-sm text-slate-400 leading-relaxed">
+                You are currently logged into an active account session as <span className="text-violet-400 font-semibold">{activeSessionUser.role}</span>.
+              </p>
+              <div className="grid grid-cols-2 gap-3 mt-6">
+                <button
+                  onClick={handleGlobalLogout}
+                  className="flex items-center justify-center gap-2 py-3 rounded-xl border border-slate-800 text-slate-300 hover:bg-slate-800 text-sm font-semibold transition-all"
+                >
+                  <LogOut size={16} />
+                  Logout
+                </button>
+                <button
+                  onClick={handleGoToDashboard}
+                  className="flex items-center justify-center gap-2 py-3 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold shadow-lg shadow-violet-950/50 transition-all"
+                >
+                  <LayoutDashboard size={16} />
+                  Dashboard
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
@@ -153,6 +270,39 @@ export default function DevoteeLoginPage() {
                 className="mt-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-medium"
               >
                 {error}
+              </motion.div>
+            )}
+
+            {showRolePopup && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="mt-6 p-5 rounded-xl bg-amber-500/10 border border-amber-500/30"
+              >
+                <h3 className="text-amber-400 font-bold text-sm">
+                  Wrong Login Portal
+                </h3>
+                <p className="mt-2 text-sm text-slate-300">
+                  {roleMessage}
+                  <br />
+                  Please continue using the correct login page.
+                </p>
+                <div className="flex gap-3 mt-5">
+                  <button
+                    type="button"
+                    onClick={() => setShowRolePopup(false)}
+                    className="flex-1 py-3 rounded-lg border border-slate-700 text-slate-300 hover:bg-slate-800 text-xs font-semibold transition-all"
+                  >
+                    Stay Here
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => navigate(redirectPath)}
+                    className="flex-1 py-3 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold transition-all"
+                  >
+                    Go To Login
+                  </button>
+                </div>
               </motion.div>
             )}
 

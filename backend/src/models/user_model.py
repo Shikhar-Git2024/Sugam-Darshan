@@ -7,7 +7,6 @@ from datetime import datetime
 
 from config.database import Base
 
-
 class User(Base):
 
     __tablename__ = "users"
@@ -65,3 +64,13 @@ class User(Base):
         DateTime,
         default=datetime.utcnow
     )
+    reset_token = Column(
+        String,
+        nullable=True
+    )
+
+    reset_token_expiry = Column(
+        DateTime,
+        nullable=True
+    )
+    

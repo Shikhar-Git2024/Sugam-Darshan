@@ -21,3 +21,4 @@ lightgbm
 joblib
 python-multipart
 email-validator
+fastapi-mail

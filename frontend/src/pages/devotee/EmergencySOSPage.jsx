@@ -1,14 +1,20 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import api from "../../services/api";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import {
-  AlertTriangle, MapPin, Ambulance, ShieldAlert, Flame, Users, Send, CheckCircle2
+  AlertTriangle, MapPin, Ambulance, ShieldAlert, Flame, Users, CheckCircle2
 } from "lucide-react";
 
 export default function EmergencySOSPage() {
   const [selectedType, setSelectedType] = useState("");
   const [location, setLocation] = useState(null);
+  const [locationError, setLocationError] = useState(null);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [description, setDescription] = useState("");
+  const [locationName, setLocationName] = useState("Fetching...");
+
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   const emergencyTypes = [
     { name: "Medical Emergency", icon: Ambulance },
@@ -20,19 +26,69 @@ export default function EmergencySOSPage() {
   ];
 
   function getLocation() {
-    navigator.geolocation.getCurrentPosition((pos) => {
-      setLocation({ latitude: pos.coords.latitude, longitude: pos.coords.longitude });
-    });
+    if (!navigator.geolocation) {
+      setLocationError("Geolocation is not supported by your browser.");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        setLocation({ latitude: pos.coords.latitude, longitude: pos.coords.longitude });
+        try {
+            const response = await fetch(
+                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`
+            );
+            const data = await response.json();
+            setLocationName(
+                data.display_name
+            );
+        }
+        catch {
+            setLocationName("Unknown Location");
+        }
+        setLocationError(null);
+      },
+      (error) => {
+        console.error(error);
+        setLocationError("Please enable location services to send SOS.");
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
   }
+
+  useEffect(() => {
+    getLocation();
+  }, []);
 
   async function sendSOS() {
     if (!selectedType || !location) return;
-    setSending(true);
-    // Simulate API Call
-    setTimeout(() => {
-      setSending(false);
+
+    try {
+      setSending(true);
+
+      const response = await api.post("/incident/create", {
+        user_id: user?.id,
+        type: "SOS",
+        category: selectedType,
+        description: description || `${selectedType} reported by devotee.`,
+        latitude: location.latitude.toString(),
+        longitude: location.longitude.toString(),
+        location_name: locationName,
+      });
+
+      console.log(response.data);
       setSent(true);
-    }, 1500);
+    } catch (error) {
+      console.error(error);
+      const message =
+      error.response?.data?.detail ||
+      error.response?.data?.message ||
+      "Unable to send SOS.";
+
+    alert(message);
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
@@ -53,7 +109,7 @@ export default function EmergencySOSPage() {
                 <button
                   key={type.name}
                   onClick={() => setSelectedType(type.name)}
-                  className={`p-6 rounded-3xl border-2 transition-all flex flex-col items-center gap-3 ${
+                  className={`p-6 rounded-3xl border-2 transition-all flex flex-col items-center gap-3 focus:outline-none focus:ring-2 focus:ring-red-500 ${
                     selectedType === type.name 
                       ? "bg-red-50 border-red-500 shadow-md" 
                       : "bg-white border-slate-200 hover:border-red-200"
@@ -65,19 +121,36 @@ export default function EmergencySOSPage() {
               ))}
             </div>
 
+            {/* Description Textarea */}
+            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
+              <h3 className="font-bold mb-3 text-slate-800">Describe the Emergency</h3>
+              <textarea
+                rows={4}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Provide additional details (e.g. Near Gate No. 2, near Pillar 45)..."
+                className="w-full border rounded-2xl p-4 resize-none focus:outline-none focus:ring-2 focus:ring-red-500 border-slate-200"
+              />
+            </div>
+            
             {/* Location Module */}
             <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-slate-800">Your Location</h3>
-                <p className="text-sm text-slate-500 mt-1">
-                  {location ? `Lat: ${location.latitude.toFixed(4)}, Long: ${location.longitude.toFixed(4)}` : "Positioning..."}
+                <p className={`text-sm mt-1 ${locationError ? "text-red-500 font-medium" : "text-slate-500"}`}>
+                  {locationError 
+                    ? locationError 
+                    : location 
+                      ? `Lat: ${location.latitude.toFixed(4)}, Long: ${location.longitude.toFixed(4)}` 
+                      : "Fetching live coordinates..."}
                 </p>
               </div>
               <button 
                 onClick={getLocation}
-                className="bg-slate-100 p-4 rounded-full text-blue-600 hover:bg-blue-50 transition-colors"
+                title="Refresh Location"
+                className="bg-slate-100 p-4 rounded-full text-blue-600 hover:bg-blue-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <MapPin size={24} />
+                <MapPin size={24} className={!location && !locationError ? "animate-pulse text-red-500" : ""} />
               </button>
             </div>
 
@@ -85,18 +158,18 @@ export default function EmergencySOSPage() {
             <button
               onClick={sendSOS}
               disabled={!selectedType || !location || sending}
-              className="w-full py-6 rounded-3xl bg-red-600 text-white font-black text-xl shadow-lg shadow-red-200 disabled:opacity-50 hover:bg-red-700 active:scale-95 transition-all"
+              className="w-full py-6 rounded-3xl bg-red-600 text-white font-black text-xl shadow-lg shadow-red-200 disabled:opacity-50 disabled:shadow-none hover:bg-red-700 active:scale-95 transition-all focus:outline-none focus:ring-4 focus:ring-red-300"
             >
               {sending ? "TRANSMITTING..." : "SEND SOS ALERT"}
             </button>
           </div>
         ) : (
-          /* Success Screen */
           <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, scale: 0.9 }} 
+            animate={{ opacity: 1, scale: 1 }}
             className="text-center py-20 bg-white rounded-3xl border border-green-100 shadow-xl"
           >
-            <CheckCircle2 size={80} className="text-green-500 mx-auto" />
+            <CheckCircle2 size={80} className="text-green-500 mx-auto animate-bounce" />
             <h2 className="text-3xl font-bold text-slate-800 mt-6">Help is on the way</h2>
             <p className="text-slate-500 mt-2">Security and Medical teams have been alerted.</p>
           </motion.div>

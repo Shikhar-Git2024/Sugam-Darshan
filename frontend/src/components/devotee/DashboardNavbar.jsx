@@ -7,7 +7,11 @@ import { NavLink, useNavigate } from "react-router-dom";
 
 export default function DashboardNavbar() {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const user = JSON.parse(
+  localStorage.getItem("user") ||
+  sessionStorage.getItem("user") ||
+  "{}"
+);
 
   const menuSections = [
     {
@@ -44,9 +48,12 @@ export default function DashboardNavbar() {
   function handleLogout() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    navigate("/devotee/login");
-  }
 
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
+
+    navigate("/devotee/login");
+}
   return (
     <aside className="fixed left-0 top-0 h-screen w-72 bg-white border-r border-amber-100 flex flex-col z-50 shadow-sm">
       <div className="p-6 border-b border-amber-100">

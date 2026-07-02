@@ -1,13 +1,20 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
+import secrets
+import asyncio
+from datetime import datetime, timedelta
+
 from models.user_model import User
 
-from utils.security import hash_password
-from utils.security import verify_password
+from utils.security import (
+    hash_password,
+    verify_password
+)
+
 from utils.jwt_handler import create_access_token
 from utils.google_auth import verify_google_token
-
+from utils.email_sender import send_reset_email
 
 class AuthController:
 
@@ -25,9 +32,7 @@ class AuthController:
             .filter(User.email == email)
             .first()
         )
-
         if existing_email:
-
             return {
                 "success": False,
                 "message": "Email already registered"
@@ -84,12 +89,13 @@ class AuthController:
                 "success": False,
                 "message": "Something went wrong. Please try again."
             }
-
+        
     def login_user(
         self,
-        db,
+        db: Session,
         email,
-        password
+        password,
+        role
     ):
 
         user = (
@@ -99,7 +105,6 @@ class AuthController:
         )
 
         if not user:
-
             return {
                 "success": False,
                 "message": "Invalid Email"
@@ -116,10 +121,23 @@ class AuthController:
             password,
             user.password_hash
         ):
-
             return {
                 "success": False,
                 "message": "Invalid Password"
+            }
+        
+        if user.role != role:
+            
+            redirect_map = {
+                "DEVOTEE": "/devotee/login",
+                "AUTHORITY": "/authority/login",
+                "ADMIN": "/admin/login"
+            }
+
+            return {
+                "success": False,
+                "message": f"This account belongs to the {user.role} Portal.",
+                "redirect": redirect_map.get(user.role)
             }
 
         token = create_access_token(
@@ -141,10 +159,11 @@ class AuthController:
                 "role": user.role
             }
         }
-
+    
+    
     def google_login(
         self,
-        db,
+        db: Session,
         google_token
     ):
 
@@ -203,4 +222,87 @@ class AuthController:
         }
 
 
+    def forgot_password(
+        self,
+        db: Session,
+        email
+    ):
+
+        user = (
+            db.query(User)
+            .filter(User.email == email)
+            .first()
+        )
+
+        if not user:
+            return {
+                "success": False,
+                "message": "No account found with this email."
+            }
+
+        token = secrets.token_urlsafe(32)
+
+        user.reset_token = token
+        user.reset_token_expiry = (
+            datetime.utcnow() + timedelta(minutes=30)
+        )
+
+        db.commit()
+
+        reset_link = (
+            f"http://localhost:5173/reset-password/{token}"
+        )
+
+        asyncio.run(
+            send_reset_email(
+                user.email,
+                reset_link
+            )
+        )
+
+        return {
+            "success": True,
+            "message": "Password reset email sent successfully."
+        }
+
+
+    def reset_password(
+        self,
+        db: Session,
+        token,
+        new_password
+    ):
+
+        user = (
+            db.query(User)
+            .filter(User.reset_token == token)
+            .first()
+        )
+
+        if not user:
+            return {
+                "success": False,
+                "message": "Invalid reset token."
+            }
+
+        if datetime.utcnow() > user.reset_token_expiry:
+            return {
+                "success": False,
+                "message": "Reset token has expired."
+            }
+
+        user.password_hash = hash_password(
+            new_password
+        )
+
+        user.reset_token = None
+        user.reset_token_expiry = None
+
+        db.commit()
+
+        return {
+            "success": True,
+            "message": "Password reset successfully."
+        }
+    
 auth_controller = AuthController()
