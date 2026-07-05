@@ -19,7 +19,6 @@ import BookingDetailsPage from "../pages/devotee/BookingDetailsPage";
 import CrowdIntelligencePage from "../pages/devotee/CrowdIntelligencePage";
 import TempleNavigationPage from "../pages/devotee/TempleNavigationPage";
 import LiveCrowdMapPage from "../pages/devotee/LiveCrowdMapPage";
-import WeatherTravelPage from "../pages/devotee/WeatherTravelPage";
 import SpiritualGuidePage from "../pages/devotee/SpiritualGuidePage";
 import FestivalCalendarPage from "../pages/devotee/FestivalCalendarPage";
 import EmergencySOSPage from "../pages/devotee/EmergencySOSPage";
@@ -42,268 +41,123 @@ import AdminDashboard from "../pages/admin/AdminDashboard";
 import AuthorityManagementPage from "../pages/admin/AuthorityManagementPage";
 import DevoteeResetPassword from "../pages/devotee/DevoteeResetPassword";
 
+// Import your new Shared Framework Shell Layout Component
+import DevoteeLayout from "../components/layouts/DevoteeLayout";
+
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
         {/* Public Landing Pages */}
-        <Route
-          path="/"
-          element={<HomePage />}
-        />
-        <Route
-          path="/features"
-          element={<FeaturesPage />}
-        />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/features" element={<FeaturesPage />} />
 
         {/* Devotee Authentication System */}
+        <Route path="/devotee/login" element={<DevoteeLoginPage />} />
+        <Route path="/devotee/register" element={<DevoteeRegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password/:token" element={<DevoteeResetPassword />} />
+
+        {/* ============================================================== */}
+        {/* UNIFIED NESTED SYSTEM LAYOUT SHELL (70% WORKSPACE CANVAS APPLIED) */}
+        {/* ============================================================== */}
         <Route
-          path="/devotee/login"
-          element={<DevoteeLoginPage />}
-        />
-        <Route
-          path="/devotee/register"
-          element={<DevoteeRegisterPage />}
-        />
-        <Route
-          path="/forgot-password"
-          element={<ForgotPasswordPage />}
-        />
-        <Route
-          path="/reset-password/:token"
-          element={<DevoteeResetPassword />}
-        />
-        {/* Secured Internal Dashboards */}
-        <Route
-          path="/devotee/dashboard"
+          path="/devotee"
           element={
             <ProtectedRoute>
-              <DevoteeDashboard />
+              <DevoteeLayout />
             </ProtectedRoute>
           }
-        />
+        >
+          {/* Sub-routing allocations automatically mapping layout structure hooks */}
+          <Route path="dashboard" element={<DevoteeDashboard />} />
+          <Route path="planner" element={<RecommendationPage />} />
+          <Route path="booking" element={<BookingPage />} />
+          <Route path="booking-success" element={<BookingSuccessPage />} />
+          <Route path="my-bookings" element={<MyBookingsPage />} />
+          <Route path="booking-details/:bookingId" element={<BookingDetailsPage />} />
+          <Route path="crowd-intelligence" element={<CrowdIntelligencePage />} />
+          <Route path="navigation" element={<TempleNavigationPage />} />
+          <Route path="live-map" element={<LiveCrowdMapPage />} />
+          <Route path="spiritual-companion" element={<SpiritualGuidePage />} />
+          <Route path="festival-calendar" element={<FestivalCalendarPage />} />
+          <Route path="emergency-sos" element={<EmergencySOSPage />} />
+          <Route path="missing-person" element={<MissingPersonPage />} />
+          <Route path="notifications" element={<NotificationsPage />} />
+          <Route path="profile" element={<ProfileSettingsPage />} />
+        </Route>
 
-        <Route
-          path="/devotee/planner"
-          element={
-            <ProtectedRoute>
-              <RecommendationPage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/devotee/booking"
-          element={
-            <ProtectedRoute>
-              <BookingPage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/devotee/booking-success"
-          element={
-            <ProtectedRoute>
-              <BookingSuccessPage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/devotee/my-bookings"
-          element={
-            <ProtectedRoute>
-              <MyBookingsPage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/devotee/booking-details/:bookingId"
-          element={
-            <ProtectedRoute>
-              <BookingDetailsPage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/devotee/crowd-intelligence"
-          element={
-          <ProtectedRoute>
-              <CrowdIntelligencePage />
-            </ProtectedRoute>
-          }
-        />
+        {/* ============================================================== */}
+        {/* AUTHORITY & ADMIN PORTAL STACKS */}
+        {/* ============================================================== */}
+        <Route path="/authority/login" element={<AuthorityLoginPage />} />
         
-        <Route
-          path="/devotee/navigation"
-          element={
-          <ProtectedRoute>
-              <TempleNavigationPage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/devotee/live-map"
-          element={
-            <ProtectedRoute>
-              <LiveCrowdMapPage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/devotee/weather-travel"
-          element={
-            <ProtectedRoute>
-              <WeatherTravelPage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/devotee/spiritual-companion"
-          element={
-            <ProtectedRoute>
-              <SpiritualGuidePage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/devotee/festival-calendar"
-          element={
-            <ProtectedRoute>
-              <FestivalCalendarPage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/devotee/emergency-sos"
-          element={
-            <ProtectedRoute>
-              <EmergencySOSPage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/devotee/missing-person"
-          element={
-            <ProtectedRoute>
-              <MissingPersonPage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/devotee/notifications"
-          element={
-            <ProtectedRoute>
-              <NotificationsPage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/devotee/profile"
-          element={
-            <ProtectedRoute>
-              <ProfileSettingsPage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/authority/login"
-          element={
-              <AuthorityLoginPage />
-          }
-        />
-
         <Route
           path="/authority/dashboard"
           element={
-              <AuthorityRoute>
-                <AuthorityDashboard />
-              </AuthorityRoute>
+            <AuthorityRoute>
+              <AuthorityDashboard />
+            </AuthorityRoute>
           }
         />
-
         <Route
           path="/authority/live-crowd-monitoring"
           element={
-              <AuthorityRoute>
-                <LiveCrowdMonitoringPage />
-              </AuthorityRoute>
+            <AuthorityRoute>
+              <LiveCrowdMonitoringPage />
+            </AuthorityRoute>
           }
         />
-
         <Route
           path="/authority/bookings"
           element={
-              <AuthorityRoute>
-                <BookingManagementPage />
-              </AuthorityRoute>
+            <AuthorityRoute>
+              <BookingManagementPage />
+            </AuthorityRoute>
           }
         />
-
         <Route
           path="/authority/devotees"
           element={
-              <AuthorityRoute>
-                <DevoteeManagementPage />
-              </AuthorityRoute>
+            <AuthorityRoute>
+              <DevoteeManagementPage />
+            </AuthorityRoute>
           }
         />
-
         <Route
           path="/authority/waitlist"
           element={
-              <AuthorityRoute>
-                <WaitlistManagementPage />
-              </AuthorityRoute>
+            <AuthorityRoute>
+              <WaitlistManagementPage />
+            </AuthorityRoute>
           }
         />
-
         <Route
           path="/authority/risk-analysis"
           element={
-              <AuthorityRoute>
-                <RiskAnalysisPage />
-              </AuthorityRoute>
+            <AuthorityRoute>
+              <RiskAnalysisPage />
+            </AuthorityRoute>
           }
         />
-
         <Route
           path="/authority/sos"
           element={
-              <AuthorityRoute>
-                <IncidentManagementPage />
-              </AuthorityRoute>
+            <AuthorityRoute>
+              <IncidentManagementPage />
+            </AuthorityRoute>
           }
         />
-
         <Route
           path="/authority/notifications"
           element={
-              <AuthorityRoute>
-                <NotificationBroadcastPage />
-              </AuthorityRoute>
+            <AuthorityRoute>
+              <NotificationBroadcastPage />
+            </AuthorityRoute>
           }
         />
 
-        <Route
-          path="/admin/login"
-          element={
-              <AdminLoginPage />
-          }
-        />
-
+        <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route
           path="/admin/dashboard"
           element={
@@ -312,7 +166,6 @@ export default function AppRoutes() {
             </AdminRoute>
           }
         />
-
         <Route
           path="/admin/authority-management"
           element={
@@ -321,9 +174,7 @@ export default function AppRoutes() {
             </AdminRoute>
           }
         />
-
       </Routes>
-
     </BrowserRouter>
   );
 }

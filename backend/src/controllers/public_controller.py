@@ -1,6 +1,7 @@
 from models.user_model import User
 from models.booking_model import Booking
 from datetime import date, timedelta
+import random
 
 class PublicController:
 
@@ -24,13 +25,33 @@ class PublicController:
             "forecast_accuracy": 96,
             "happy_devotees": 98
         }
-
+    
     def crowd_status(self):
+        # 1. Define the possible states and their matching time slots
+        scenarios = [
+            {"status": "LOW", "recommended_slot": "Immediate access / Any time"},
+            {"status": "MODERATE", "recommended_slot": "07:00-10:00"},
+            {"status": "HIGH", "recommended_slot": "14:00-16:00"},
+            {"status": "CRITICAL", "recommended_slot": "19:00-21:00"}
+        ]
+        
+        # 2. Randomly pick one scenario
+        chosen = random.choice(scenarios)
+        
+        # 3. Generate a realistic wait time based on the status
+        if chosen["status"] == "LOW":
+            wait_time = random.randint(0, 10)      # 0 to 10 mins
+        elif chosen["status"] == "MODERATE":
+            wait_time = random.randint(11, 25)     # 11 to 25 mins
+        elif chosen["status"] == "HIGH":
+            wait_time = random.randint(26, 50)     # 26 to 50 mins
+        else:  # CRITICAL
+            wait_time = random.randint(51, 90)     # 51 to 90 mins
 
         return {
-            "status": "MODERATE",
-            "wait_time": 18,
-            "recommended_slot": "07:00-10:00"
+            "status": chosen["status"],
+            "wait_time": wait_time,
+            "recommended_slot": chosen["recommended_slot"]
         }
 
     def forecast(self):

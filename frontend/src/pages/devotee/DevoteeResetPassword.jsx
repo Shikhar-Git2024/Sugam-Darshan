@@ -1,8 +1,7 @@
-
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Lock, Eye, EyeOff, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { Lock, Eye, EyeOff, ArrowLeft, CheckCircle2, AlertTriangle } from "lucide-react";
 import api from "../../services/api";
 
 export default function DevoteeResetPassword() {
@@ -17,18 +16,24 @@ export default function DevoteeResetPassword() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  // Real-time security state metrics
+  const hasMinLength = password.length >= 8;
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const isPasswordTyping = password.length > 0;
+
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
     setSuccess("");
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+    if (!hasMinLength || !hasUppercase || !hasNumber) {
+      setError("Please ensure your password satisfies all security parameters.");
       return;
     }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
       return;
     }
 
@@ -41,7 +46,7 @@ export default function DevoteeResetPassword() {
       });
 
       setSuccess(
-        res?.data?.message || "Password reset successfully."
+        res?.data?.message || "Your password has been updated successfully."
       );
 
       setTimeout(() => {
@@ -52,95 +57,160 @@ export default function DevoteeResetPassword() {
       setError(
         err?.response?.data?.message ||
         err?.response?.data?.detail ||
-        "Unable to reset password."
+        "Unable to reset password. The security token may be invalid or expired."
       );
     } finally {
-      setLoading(false);
+      loading && setLoading(false);
     }
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-40" />
-      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-violet-600/10 blur-[150px] rounded-full" />
+    <div className="min-h-screen bg-[#fffdf8] flex items-center justify-center p-4 md:p-6 relative overflow-hidden text-left antialiased selection:bg-orange-100">
+      
+      {/* Devotional Warm Ambient Background Assets */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#f3e3c3_1px,transparent_1px),linear-gradient(to_bottom,#f3e3c3_1px,transparent_1px)] bg-[size:5rem_5rem] opacity-20 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-gradient-to-b from-orange-100/30 to-transparent rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute -bottom-20 -left-20 w-[30rem] h-[40rem] bg-gradient-to-tr from-amber-100/40 to-transparent rounded-full blur-[100px] pointer-events-none" />
 
-      <button
-        onClick={() => navigate("/devotee/login")}
-        className="absolute top-6 left-6 flex items-center gap-2 text-slate-400 hover:text-white"
+      {/* Clean Single Canvas Account Content Block */}
+      <motion.div 
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="w-full max-w-xl bg-white/80 border border-[#f3e3c3] backdrop-blur-md rounded-[24px] p-6 md:p-10 shadow-md z-10 space-y-6"
       >
-        <ArrowLeft size={16}/> Back to Login
-      </button>
+        {/* Top Utility Row */}
+        <div className="w-full flex justify-end pb-4 border-b border-slate-50">
+          <button 
+            type="button"
+            onClick={() => navigate("/devotee/login")}
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-[#ea580c] bg-[#fffdf8] border border-[#f3e3c3] px-3.5 py-2 rounded-xl shadow-3xs cursor-pointer group transition border-0"
+          >
+            <ArrowLeft size={13} className="group-hover:-translate-x-0.5 transition-transform" />
+            Back To Login
+          </button>
+        </div>
 
-      <motion.div
-        initial={{opacity:0,y:20}}
-        animate={{opacity:1,y:0}}
-        className="w-full max-w-md bg-slate-900/40 border border-slate-800 rounded-3xl backdrop-blur-xl p-8"
-      >
-        <h1 className="text-3xl font-bold text-white text-center">
-          Reset Password
-        </h1>
-
-        <p className="text-slate-400 text-sm text-center mt-2">
-          Enter your new password.
-        </p>
+        {/* Main Header Context */}
+        <div className="space-y-1">
+          <h2 className="text-2xl font-black text-slate-950 tracking-tight m-0">
+            Create a New Password
+          </h2>
+          <p className="text-sm font-medium text-slate-700 m-0 pt-0.5">
+            Enter a strong password to secure your Sugam Darshan account.
+          </p>
+        </div>
 
         {error && (
-          <div className="mt-6 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
-            {error}
-          </div>
+          <motion.div 
+            initial={{ opacity: 0, x: -6 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="p-3.5 bg-red-50 border border-red-200 text-red-800 text-xs font-bold rounded-xl flex items-start gap-2"
+          >
+            <AlertTriangle size={14} className="text-red-600 shrink-0 mt-0.5" />
+            <span>{error}</span>
+          </motion.div>
         )}
 
         {success && (
-          <div className="mt-6 flex items-center gap-2 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm">
-            <CheckCircle2 size={18}/>
-            {success}
-          </div>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold rounded-xl flex items-start gap-2"
+          >
+            <CheckCircle2 size={14} className="text-emerald-600 shrink-0 mt-0.5" />
+            <div className="space-y-0.5">
+              <p className="m-0 font-bold">{success}</p>
+              <p className="m-0 text-slate-500 text-[11px] font-medium">Redirecting you to the sign in page...</p>
+            </div>
+          </motion.div>
         )}
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* New Password Input */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-700 uppercase tracking-wide block px-0.5">
+              New Password
+            </label>
+            <div className="relative border border-[#f3e3c3] rounded-xl bg-[#fffdf8] px-3.5 py-3 flex items-center gap-3 transition-all focus-within:ring-2 focus-within:ring-[#ea580c] focus-within:border-[#ea580c]">
+              <Lock size={16} className="text-slate-400 shrink-0" />
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                placeholder="Enter your new password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full border-0 bg-transparent p-0 text-sm font-semibold text-slate-900 placeholder-slate-400 focus:outline-hidden"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="text-slate-400 hover:text-slate-600 transition border-0 bg-transparent cursor-pointer p-0"
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
 
-          <div className="relative">
-            <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"/>
-            <input
-              type={showPassword ? "text":"password"}
-              placeholder="New Password"
-              value={password}
-              onChange={(e)=>setPassword(e.target.value)}
-              className="w-full pl-11 pr-11 py-3.5 bg-slate-950 border border-slate-800 rounded-xl text-white"
-            />
-            <button type="button"
-              onClick={()=>setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500">
-              {showPassword ? <EyeOff size={16}/> : <Eye size={16}/>}
-            </button>
+            {/* Secure Criteria Metric Checker */}
+            {isPasswordTyping && (
+              <motion.div 
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-2.5 bg-slate-50 rounded-lg border border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-1.5 text-[11px] font-bold"
+              >
+                <div className={`flex items-center gap-1 ${hasMinLength ? "text-emerald-600" : "text-slate-400"}`}>
+                  <span>{hasMinLength ? "✓" : "•"} 8+ Characters</span>
+                </div>
+                <div className={`flex items-center gap-1 ${hasUppercase ? "text-emerald-600" : "text-slate-400"}`}>
+                  <span>{hasUppercase ? "✓" : "•"} 1 Uppercase</span>
+                </div>
+                <div className={`flex items-center gap-1 ${hasNumber ? "text-emerald-600" : "text-slate-400"}`}>
+                  <span>{hasNumber ? "✓" : "•"} 1 Number</span>
+                </div>
+              </motion.div>
+            )}
           </div>
 
-          <div className="relative">
-            <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"/>
-            <input
-              type={showConfirm ? "text":"password"}
-              placeholder="Confirm Password"
-              value={confirmPassword}
-              onChange={(e)=>setConfirmPassword(e.target.value)}
-              className="w-full pl-11 pr-11 py-3.5 bg-slate-950 border border-slate-800 rounded-xl text-white"
-            />
-            <button type="button"
-              onClick={()=>setShowConfirm(!showConfirm)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500">
-              {showConfirm ? <EyeOff size={16}/> : <Eye size={16}/>}
-            </button>
+          {/* Confirm Password Input */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-700 uppercase tracking-wide block px-0.5">
+              Confirm Password
+            </label>
+            <div className="relative border border-[#f3e3c3] rounded-xl bg-[#fffdf8] px-3.5 py-3 flex items-center gap-3 transition-all focus-within:ring-2 focus-within:ring-[#ea580c] focus-within:border-[#ea580c]">
+              <Lock size={16} className="text-slate-400 shrink-0" />
+              <input
+                type={showConfirm ? "text" : "password"}
+                required
+                placeholder="Verify your new password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full border-0 bg-transparent p-0 text-sm font-semibold text-slate-900 placeholder-slate-400 focus:outline-hidden"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirm(!showConfirm)}
+                className="text-slate-400 hover:text-slate-600 transition border-0 bg-transparent cursor-pointer p-0"
+              >
+                {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
           </div>
 
-          <motion.button
-            whileHover={{scale:1.01}}
-            whileTap={{scale:0.99}}
-            disabled={loading}
-            className="w-full py-4 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold disabled:opacity-60"
+          {/* Action Form Controls Button */}
+          <button
+            type="submit"
+            disabled={loading || !!success}
+            className="w-full mt-2 py-3.5 rounded-xl bg-[#ea580c] hover:bg-[#c2410c] text-white text-sm font-black tracking-widest uppercase border-0 shadow-sm hover:shadow-orange-200 transition-all cursor-pointer active:scale-[0.995] disabled:opacity-50"
           >
-            {loading ? "Resetting..." : "Reset Password"}
-          </motion.button>
-
+            {loading ? "Saving..." : "Save New Password"}
+          </button>
         </form>
+
+        {/* Secure System Bottom Operational Anchor */}
+        <div className="w-full flex items-center justify-center gap-1.5 text-[10px] font-semibold text-slate-400 select-none uppercase tracking-wider pt-4 border-t border-slate-50">
+          <Lock size={10} />
+          <span>Secure Credentials Dashboard • Sugam Darshan © 2026</span>
+        </div>
       </motion.div>
     </div>
   );

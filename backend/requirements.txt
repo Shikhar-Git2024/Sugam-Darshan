@@ -22,3 +22,5 @@ joblib
 python-multipart
 email-validator
 fastapi-mail
+google-auth
+google-auth-oauthlib

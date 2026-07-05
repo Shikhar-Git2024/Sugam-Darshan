@@ -10,7 +10,7 @@ from services.notification_service import NotificationService
 
 class BookingController:
 
-    SLOT_CAPACITY = 5000
+    SLOT_CAPACITY = 50
 
     def generate_booking_id(self, booking_db_id):
         return f"SD2026{booking_db_id:06d}"
@@ -254,11 +254,11 @@ class BookingController:
 
             remaining = self.SLOT_CAPACITY - booked
 
-            if booked < 1000:
+            if booked < 10:
                 crowd_level = "LOW"
-            elif booked < 2500:
+            elif booked < 25:
                 crowd_level = "MODERATE"
-            elif booked < 4000:
+            elif booked < 40:
                 crowd_level = "BUSY"
             else:
                 crowd_level = "HEAVY"

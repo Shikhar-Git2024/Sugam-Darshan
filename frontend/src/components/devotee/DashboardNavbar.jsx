@@ -29,7 +29,6 @@ export default function DashboardNavbar() {
         { name: "Crowd Intelligence", icon: BarChart3, path: "/devotee/crowd-intelligence" },
         { name: "Temple Navigation", icon: MapPinned, path: "/devotee/navigation" },
         { name: "Live Crowd Map", icon: Map, path: "/devotee/live-map" },
-        { name: "Weather & Travel", icon: CloudSun, path: "/devotee/weather-travel" },
         { name: "Spiritual Guide", icon: BookOpen, path: "/devotee/spiritual-companion" },
         { name: "Festival Calendar", icon: CalendarDays, path: "/devotee/festival-calendar" },
       ]
@@ -55,7 +54,7 @@ export default function DashboardNavbar() {
     navigate("/devotee/login");
 }
   return (
-    <aside className="fixed left-0 top-0 h-screen w-72 bg-white border-r border-amber-100 flex flex-col z-50 shadow-sm">
+    <aside className="fixed left-0 top-0 h-screen w-60 bg-white border-r border-amber-100 flex flex-col z-50 shadow-sm">
       <div className="p-6 border-b border-amber-100">
         <h1 className="text-2xl font-bold text-orange-800">Sugam Darshan</h1>
         <p className="text-sm text-slate-500">Devotee Dashboard</p>
