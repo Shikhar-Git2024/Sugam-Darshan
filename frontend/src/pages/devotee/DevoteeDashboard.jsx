@@ -13,6 +13,7 @@ import EmergencyContacts from "../../components/devotee/EmergencyContacts";
 import TempleGuidelines from "../../components/devotee/TempleGuidelines";
 
 import logo from "../../assets/images/logo.png";
+import footerBg from "../../assets/images/footer-bg.png";
 
 export default function DevoteeDashboard() {
   const navigate = useNavigate();
@@ -309,7 +310,7 @@ export default function DevoteeDashboard() {
   }, [navigate, booking?.id]);
 
   return (
-    <div className="min-h-screen bg-slate-50/50 flex flex-col antialiased">
+    <div className="min-h-screen bg-[#fff8ee] flex flex-col antialiased">
       {/* 1. Dashboard Core Header */}
       <DashboardHeader 
         notifications={notifications} 
@@ -386,9 +387,18 @@ export default function DevoteeDashboard() {
 
       </main>
 
-      {/* 8. Compressed Light Footer Architecture */}
-      <footer className="w-full bg-white border-t border-[#f3e3c3] mt-auto">
-        <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col md:flex-row items-center justify-between gap-5">
+      {/* 8. Footer Architecture */}
+      <footer className="relative w-full mt-auto overflow-hidden border-t border-[#f3e3c3]">
+
+        {/* Background Image */}
+        <img
+          src={footerBg}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+
+        {/* Content */}
+        <div className="relative max-w-7xl mx-auto px-6 py-5 flex flex-col md:flex-row items-center justify-between gap-5">
 
           {/* Brand */}
           <div className="flex items-center gap-3">
@@ -403,7 +413,7 @@ export default function DevoteeDashboard() {
                 Sugam Darshan
               </h3>
 
-              <p className="text-xs font-medium text-slate-500">
+              <p className="text-xs font-medium text-slate-600">
                 AI-Powered Smart Pilgrimage Platform
               </p>
             </div>
@@ -418,11 +428,11 @@ export default function DevoteeDashboard() {
               📧 sugamdarshan.project@gmail.com
             </a>
 
-            <p className="text-[11px] text-slate-500">
+            <p className="text-[11px] text-slate-600">
               Version 1.0.0 • Live Updated {lastSynced}
             </p>
 
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-slate-500">
               © 2026 Sugam Darshan. All Rights Reserved.
             </p>
           </div>

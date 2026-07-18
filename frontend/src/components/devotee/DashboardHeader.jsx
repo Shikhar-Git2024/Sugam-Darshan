@@ -152,7 +152,7 @@ export default function DashboardHeader({
         }
       `}</style>
 
-      <header className="sticky top-0 z-40 flex w-full items-center justify-between gap-4 bg-white/95 backdrop-blur-md border-b border-amber-100/70 px-6 py-3.5 shadow-2xs text-left">
+      <header className="sticky top-0 z-40 flex w-full items-center justify-between gap-4 bg-[#fffaf2]/95 backdrop-blur-md border-b border-amber-100/70 px-6 py-3.5 shadow-2xs text-left">
         
         {/* Continuous Broadcast Live Loop Canvas */}
         <div className="flex-1 min-w-0 flex items-center bg-slate-50 border border-slate-100 rounded-xl px-3 h-10 overflow-hidden relative">

@@ -4,6 +4,7 @@ import {
   LogOut, CalendarCheck
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
+import logo from "../../assets/images/logo.png";
 
 export default function DashboardNavbar() {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ export default function DashboardNavbar() {
     {
       title: "Temple & Guidance",
       items: [
-        { name: "Temple Navigation", icon: MapPinned, path: "/devotee/navigation" },
+        { name: "Navigation", icon: MapPinned, path: "/devotee/navigation" },
         { name: "Live Crowd Map", icon: Map, path: "/devotee/live-map" },
         { name: "Spiritual Guide", icon: BookOpen, path: "/devotee/spiritual-companion" },
         { name: "Festival Calendar", icon: CalendarDays, path: "/devotee/festival-calendar" },
@@ -53,15 +54,29 @@ export default function DashboardNavbar() {
 }
   return (
     <aside className="fixed left-0 top-0 h-screen w-60 bg-white border-r border-amber-100 flex flex-col z-50 shadow-sm">
-      <div className="p-6 border-b border-amber-100">
-        <h1 className="text-2xl font-bold text-orange-800">Sugam Darshan</h1>
-        <p className="text-sm text-slate-500">Devotee Dashboard</p>
+      <div className="p-5 border-b border-amber-100">
+        <div className="flex items-center gap-3">
+          <img
+            src={logo}
+            alt="Sugam Darshan"
+            className="w-12 h-12 object-contain flex-shrink-0"
+          />
+
+          <div className="flex flex-col justify-center min-w-0">
+            <h1 className="text-lg font-black text-orange-800 leading-tight whitespace-nowrap">
+              Sugam Darshan
+            </h1>
+            <p className="text-xs text-slate-500 font-medium">
+              Devotee Dashboard
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto py-4 px-3 space-y-6">
         {menuSections.map((section) => (
           <div key={section.title}>
-            <p className="px-4 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+            <p className="px-4 text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">
               {section.title}
             </p>
             {section.items.map((item) => {
@@ -72,7 +87,7 @@ export default function DashboardNavbar() {
                   to={item.path}
                   className={({ isActive }) => `
                     flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all mb-1
-                    ${isActive ? "bg-amber-100 text-orange-800 font-semibold" : "text-slate-600 hover:bg-slate-50"}
+                    ${isActive ? "bg-orange-100 border-l-4 border-orange-600 text-orange-700 font-bold" : "text-slate-600 hover:bg-slate-50"}
                     ${item.className || ""}
                   `}
                 >
@@ -87,8 +102,8 @@ export default function DashboardNavbar() {
 
       <div className="p-4 border-t border-amber-100 bg-slate-50">
         <div className="mb-4">
-          <p className="font-semibold text-slate-800">{user?.name || "Devotee"}</p>
-          <p className="text-xs text-slate-500 truncate">{user?.email || "Welcome"}</p>
+          <p className="font-semibold text-stone-900">{user?.name || "Devotee"}</p>
+          <p className="text-xs text-stone-500 truncate">{user?.email || "Welcome"}</p>
         </div>
         <button
           onClick={handleLogout}
