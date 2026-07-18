@@ -2,7 +2,6 @@ from services.recommendation_engine import (
     recommendation_engine
 )
 
-
 class RecommendationController:
 
     def get_recommendation(

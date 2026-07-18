@@ -9,6 +9,8 @@ from schemas.login_schema import LoginRequest
 from schemas.google_login_schema import GoogleLoginRequest
 from schemas.forgot_password_schema import ForgotPasswordRequest
 from schemas.reset_password_schema import ResetPasswordRequest
+from schemas.verify_email_schema import VerifyEmailRequest
+from schemas.resend_otp_schema import ResendOTPRequest
 
 from controllers.auth_controller import auth_controller
 
@@ -73,4 +75,29 @@ def reset_password(
         db=db,
         token=data.token,
         new_password=data.new_password
+    )
+
+
+@router.post("/verify-email")
+def verify_email(
+    data: VerifyEmailRequest,
+    db: Session = Depends(get_db)
+):
+
+    return auth_controller.verify_email(
+        db=db,
+        email=data.email,
+        otp=data.otp
+    )
+
+
+@router.post("/resend-email-otp")
+def resend_email_otp(
+    data: ResendOTPRequest,
+    db: Session = Depends(get_db)
+):
+
+    return auth_controller.resend_email_otp(
+        db=db,
+        email=data.email
     )

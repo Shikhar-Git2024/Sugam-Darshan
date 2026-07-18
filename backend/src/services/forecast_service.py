@@ -2,6 +2,9 @@ import os
 import joblib
 import pandas as pd
 
+from utils.data_lookup import data_lookup
+
+
 class ForecastService:
 
     def __init__(self):
@@ -20,73 +23,53 @@ class ForecastService:
             )
         )
 
-        self.risk_model = joblib.load(
-            os.path.join(
-                base_path,
-                "risk_prediction_model.pkl"
-            )
+    def predict_crowd(self, visit_date):
+
+        features = data_lookup.get_date_features(
+            visit_date
         )
 
-        self.slot_model = joblib.load(
-            os.path.join(
-                base_path,
-                "slot_forecast_model.pkl"
-            )
-        )
+        if features is None:
+            return None
 
-    def get_models(self):
-
-        return {
-            "crowd_model": self.crowd_model,
-            "risk_model": self.risk_model,
-            "slot_model": self.slot_model
-        }
-
-    # ----------------------------------
-    # Crowd Forecast
-    # ----------------------------------
-
-    def predict_crowd(self, data):
-
-        df = pd.DataFrame([data])
+        df = pd.DataFrame([features])
 
         prediction = self.crowd_model.predict(df)
 
         return float(prediction[0])
 
-    # ----------------------------------
-    # Risk Forecast
-    # ----------------------------------
+    def get_crowd_level(self, visitors):
 
-    def predict_risk(self, data):
+        if visitors < 50000:
+            return "LOW"
 
-        df = pd.DataFrame([data])
+        elif visitors < 65000:
+            return "MODERATE"
 
-        prediction = self.risk_model.predict(df)
+        elif visitors < 85000:
+            return "BUSY"
 
-        risk_map = {
-            0: "LOW",
-            1: "MEDIUM",
-            2: "HIGH",
-            3: "CRITICAL"
-        }
+        else:
+            return "HEAVY"
 
-        return risk_map.get(
-            int(prediction[0]),
-            "UNKNOWN"
-        )
+    def get_wait_time(self, visitors):
 
-    # ----------------------------------
-    # Slot Forecast
-    # ----------------------------------
+        wait = int((visitors / 2000) + 5)
 
-    def predict_slot(self, data):
+        return max(5, min(wait, 180))
 
-        df = pd.DataFrame([data])
+    def get_risk_level(self, visitors):
 
-        prediction = self.slot_model.predict(df)
+        if visitors < 40000:
+            return "LOW"
 
-        return float(prediction[0])
+        elif visitors < 60000:
+            return "MODERATE"
+
+        elif visitors < 80000:
+            return "HIGH"
+
+        return "CRITICAL"
 
 
 forecast_service = ForecastService()

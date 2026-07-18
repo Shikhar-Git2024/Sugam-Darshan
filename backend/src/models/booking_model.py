@@ -51,6 +51,11 @@ class Booking(Base):
         default="CONFIRMED"
     )
 
+    checked_in_at = Column(
+        DateTime,
+        nullable=True
+    )
+
     created_at = Column(
         DateTime,
         default=datetime.utcnow

@@ -198,7 +198,7 @@ export default function NotificationsPage() {
 
   return (
     <div className="min-h-screen bg-[#fffdf8] text-slate-800 px-4 py-6 md:p-6 text-left antialiased selection:bg-orange-100 pb-16">
-      <div className="max-w-3xl mx-auto space-y-5">
+      <div className="max-w-6xl mx-auto space-y-5">
 
         {/* Premium Unified Header Node */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-2xl border border-[#f3e3c3] p-5 shadow-3xs">

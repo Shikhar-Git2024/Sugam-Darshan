@@ -161,12 +161,19 @@ export default function DevoteeDashboard() {
     try {
       const bookingRes = await api.get(`/my-bookings/${userId}`);
       const list = bookingRes.data?.bookings || bookingRes.data || [];
-      if (list.length > 0) {
-        activeBookingReference = list[0];
-        setBooking(activeBookingReference);
-      } else {
-        setBooking(null);
-      }
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const upcomingBooking = list
+        .filter((b) => {
+          const status = String(b.booking_status || b.status || "").toUpperCase();
+          if (status === "CANCELLED") return false;
+          const visitDate = new Date(b.visit_date);
+          visitDate.setHours(0, 0, 0, 0);
+          return visitDate >= today;
+        })
+        .sort((a, b) => new Date(a.visit_date) - new Date(b.visit_date))[0];
+      activeBookingReference = upcomingBooking || null;
+      setBooking(activeBookingReference);
       setErrorStates(prev => ({ ...prev, booking: false }));
     } catch (err) {
       console.error("Booking verification handshake failure:", err);
@@ -312,13 +319,13 @@ export default function DevoteeDashboard() {
         onMarkAsRead={handleMarkAsRead}
       />
 
+      {/* 2. Custom Dashboard Greeting Component Node */}
+      <div className="animate-slide-up" style={{ animationDelay: "50ms" }}>
+        <DashboardGreeting user={user} />
+      </div>
+
       {/* Core Main Content Scroll Canvas Workspace */}
       <main className="p-6 space-y-8 flex-1 max-w-6xl w-full mx-auto pb-12">
-        
-        {/* 2. Custom Dashboard Greeting Component Node */}
-        <div className="animate-slide-up" style={{ animationDelay: "50ms" }}>
-          <DashboardGreeting user={user} />
-        </div>
 
         {/* 3. Recent Booking Matrix Segment */}
         <div className="animate-slide-up" style={{ animationDelay: "100ms" }}>
@@ -328,26 +335,12 @@ export default function DevoteeDashboard() {
             </div>
           ) : booking ? (
             <RecentBooking
-              booking={booking} 
+              booking={booking}
               isLoading={loadingStates.booking}
               onPlanVisit={routePlannerActionDispatch}
               onViewBooking={routeBookingDetailsActionDispatch}
             />
-          ) : (
-            <div className="w-full bg-white rounded-xl border border-slate-200/80 p-8 text-center flex flex-col items-center justify-center shadow-sm">
-              <div className="text-4xl mb-3 filter grayscale opacity-80 select-none animate-bounce">🙏</div>
-              <h4 className="text-sm font-bold text-slate-800 tracking-tight">Plan Your First Darshan Journey</h4>
-              <p className="text-xs text-slate-500 max-w-sm mt-1 mb-4 leading-relaxed">
-                Book your prioritized visit window now to generate optimized paths and live AI recommendation windows.
-              </p>
-              <button 
-                onClick={routePlannerActionDispatch}
-                className="px-4 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-semibold shadow transition-colors"
-              >
-                Plan Visit
-              </button>
-            </div>
-          )}
+          ) : null}
         </div>
 
         {/* 4. Orchestration Dashboard Overview Node */}

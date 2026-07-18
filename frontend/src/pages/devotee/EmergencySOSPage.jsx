@@ -29,9 +29,9 @@ export default function EmergencySOSPage() {
 
   const emergencyTypes = [
     { name: "Medical Emergency", icon: Ambulance, text: "Requires immediate medical team assistance." },
+    { name: "Stampede Risk", icon: AlertTriangle, text: "Dangerous crowd compression or gate blocks." },
     { name: "Injury / Health Care", icon: Heart, text: "Unconsciousness, sudden illnesses, or falls." },
     { name: "Security Threat", icon: ShieldAlert, text: "Harassment, theft, or suspicious activities." },
-    { name: "Stampede Risk", icon: AlertTriangle, text: "Dangerous crowd compression or gate blocks." },
     { name: "Fire Hazard", icon: Flame, text: "Visible smoke, open sparks, or fire outbreak." },
     { name: "Other Emergency", icon: HelpCircle, text: "Any critical situation not listed above." },
   ];
@@ -99,9 +99,9 @@ export default function EmergencySOSPage() {
 
   return (
     <div className="min-h-screen bg-[#fffdf8] text-slate-900 px-4 py-6 md:p-6 text-left antialiased">
-      <div className="max-w-3xl mx-auto space-y-6">
+      <div className="max-w-6xl mx-auto space-y-6">
         
-        {/* Simplified Header Block without Back Button */}
+        {/* Header Block*/}
         <div className="space-y-0.5">
           <h1 className="text-2xl md:text-3xl font-black text-slate-950 tracking-tight m-0">Emergency Assistance</h1>
           <p className="text-sm font-medium text-slate-700 m-0 pt-0.5">Request immediate help from temple security and response teams.</p>

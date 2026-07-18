@@ -73,7 +73,7 @@ export default function TempleGuidelines() {
         </div>
 
         {/* PROHIBITED ITEMS CATEGORY */}
-        <div className="p-4 bg-[#fffdf8] border border-rose-200 rounded-xl space-y-2.5 hover:border-rose-300 hover:bg-rose-50/20 transition-all duration-200 shadow-3xs">
+        <div className="p-4 bg-[#fffdf8] border border-rose-200 rounded-xl space-y-2.5 hover:border-orange-200 hover:bg-[#fffbeb] transition-all duration-200 shadow-3xs">
           <div className="flex items-center gap-2 text-rose-700 font-bold text-xs md:text-sm">
             <div className="p-1.5 bg-rose-50 rounded-lg"><AlertCircle size={14} /></div>
             <h3 className="m-0 text-slate-900 font-extrabold text-sm">Strictly Prohibited</h3>

@@ -8,6 +8,7 @@ import HomePage from "../pages/public/HomePage";
 import FeaturesPage from "../pages/public/FeaturesPage";
 import DevoteeLoginPage from "../pages/devotee/DevoteeLoginPage";
 import DevoteeRegisterPage from "../pages/devotee/DevoteeRegisterPage";
+import VerifyEmailPage from "../pages/devotee/VerifyEmailPage";
 import ForgotPasswordPage from "../pages/devotee/ForgotPasswordPage";
 import DevoteeDashboard from "../pages/devotee/DevoteeDashboard";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
@@ -16,7 +17,6 @@ import BookingPage from "../pages/devotee/BookingPage";
 import BookingSuccessPage from "../pages/devotee/BookingSuccessPage";
 import MyBookingsPage from "../pages/devotee/MyBookingsPage";
 import BookingDetailsPage from "../pages/devotee/BookingDetailsPage";
-import CrowdIntelligencePage from "../pages/devotee/CrowdIntelligencePage";
 import TempleNavigationPage from "../pages/devotee/TempleNavigationPage";
 import LiveCrowdMapPage from "../pages/devotee/LiveCrowdMapPage";
 import SpiritualGuidePage from "../pages/devotee/SpiritualGuidePage";
@@ -55,6 +55,7 @@ export default function AppRoutes() {
         {/* Devotee Authentication System */}
         <Route path="/devotee/login" element={<DevoteeLoginPage />} />
         <Route path="/devotee/register" element={<DevoteeRegisterPage />} />
+        <Route path="/devotee/verify-email" element={<VerifyEmailPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password/:token" element={<DevoteeResetPassword />} />
 
@@ -76,7 +77,6 @@ export default function AppRoutes() {
           <Route path="booking-success" element={<BookingSuccessPage />} />
           <Route path="my-bookings" element={<MyBookingsPage />} />
           <Route path="booking-details/:bookingId" element={<BookingDetailsPage />} />
-          <Route path="crowd-intelligence" element={<CrowdIntelligencePage />} />
           <Route path="navigation" element={<TempleNavigationPage />} />
           <Route path="live-map" element={<LiveCrowdMapPage />} />
           <Route path="spiritual-companion" element={<SpiritualGuidePage />} />

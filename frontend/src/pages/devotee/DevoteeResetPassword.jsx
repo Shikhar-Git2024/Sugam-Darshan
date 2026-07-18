@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Lock, Eye, EyeOff, ArrowLeft, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Lock, Eye, EyeOff, ArrowLeft, CheckCircle2, AlertTriangle, KeyRound } from "lucide-react";
 import api from "../../services/api";
 
 export default function DevoteeResetPassword() {
@@ -60,7 +60,7 @@ export default function DevoteeResetPassword() {
         "Unable to reset password. The security token may be invalid or expired."
       );
     } finally {
-      loading && setLoading(false);
+      if (loading) setLoading(false);
     }
   }
 
@@ -101,14 +101,32 @@ export default function DevoteeResetPassword() {
           </p>
         </div>
 
+        {/* Improvement: If target verification link fails or expires, display a structured recovery button */}
         {error && (
           <motion.div 
             initial={{ opacity: 0, x: -6 }}
             animate={{ opacity: 1, x: 0 }}
-            className="p-3.5 bg-red-50 border border-red-200 text-red-800 text-xs font-bold rounded-xl flex items-start gap-2"
+            className="p-3.5 bg-red-50 border border-red-200 text-red-800 text-xs font-bold rounded-xl flex flex-col items-start gap-2"
           >
-            <AlertTriangle size={14} className="text-red-600 shrink-0 mt-0.5" />
-            <span>{error}</span>
+            <div className="flex items-start gap-2 w-full">
+              <AlertTriangle size={14} className="text-red-600 shrink-0 mt-0.5" />
+              <span className="flex-1">
+                {error.toLowerCase().includes("expired") || error.toLowerCase().includes("token")
+                  ? "This password reset link has expired or is invalid."
+                  : error}
+              </span>
+            </div>
+            
+            {(error.toLowerCase().includes("expired") || error.toLowerCase().includes("token")) && (
+              <button
+                type="button"
+                onClick={() => navigate("/forgot-password")}
+                className="mt-1 ml-6 inline-flex items-center gap-1 text-xs font-black text-[#ea580c] hover:text-[#c2410c] hover:underline bg-transparent border-0 p-0 cursor-pointer uppercase tracking-wider transition"
+              >
+                <KeyRound size={13} />
+                Request a new password reset email
+              </button>
+            )}
           </motion.div>
         )}
 
@@ -136,16 +154,18 @@ export default function DevoteeResetPassword() {
               <Lock size={16} className="text-slate-400 shrink-0" />
               <input
                 type={showPassword ? "text" : "password"}
+                disabled={!!success || (error.toLowerCase().includes("expired") || error.toLowerCase().includes("token"))}
                 required
                 placeholder="Enter your new password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full border-0 bg-transparent p-0 text-sm font-semibold text-slate-900 placeholder-slate-400 focus:outline-hidden"
+                className="w-full border-0 bg-transparent p-0 text-sm font-semibold text-slate-900 placeholder-slate-400 focus:outline-hidden disabled:opacity-50"
               />
               <button
                 type="button"
+                disabled={!!success || (error.toLowerCase().includes("expired") || error.toLowerCase().includes("token"))}
                 onClick={() => setShowPassword(!showPassword)}
-                className="text-slate-400 hover:text-slate-600 transition border-0 bg-transparent cursor-pointer p-0"
+                className="text-slate-400 hover:text-slate-600 transition border-0 bg-transparent cursor-pointer p-0 disabled:opacity-30"
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
@@ -180,16 +200,18 @@ export default function DevoteeResetPassword() {
               <Lock size={16} className="text-slate-400 shrink-0" />
               <input
                 type={showConfirm ? "text" : "password"}
+                disabled={!!success || (error.toLowerCase().includes("expired") || error.toLowerCase().includes("token"))}
                 required
                 placeholder="Verify your new password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full border-0 bg-transparent p-0 text-sm font-semibold text-slate-900 placeholder-slate-400 focus:outline-hidden"
+                className="w-full border-0 bg-transparent p-0 text-sm font-semibold text-slate-900 placeholder-slate-400 focus:outline-hidden disabled:opacity-50"
               />
               <button
                 type="button"
+                disabled={!!success || (error.toLowerCase().includes("expired") || error.toLowerCase().includes("token"))}
                 onClick={() => setShowConfirm(!showConfirm)}
-                className="text-slate-400 hover:text-slate-600 transition border-0 bg-transparent cursor-pointer p-0"
+                className="text-slate-400 hover:text-slate-600 transition border-0 bg-transparent cursor-pointer p-0 disabled:opacity-30"
               >
                 {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
@@ -199,7 +221,7 @@ export default function DevoteeResetPassword() {
           {/* Action Form Controls Button */}
           <button
             type="submit"
-            disabled={loading || !!success}
+            disabled={loading || !!success || (error.toLowerCase().includes("expired") || error.toLowerCase().includes("token"))}
             className="w-full mt-2 py-3.5 rounded-xl bg-[#ea580c] hover:bg-[#c2410c] text-white text-sm font-black tracking-widest uppercase border-0 shadow-sm hover:shadow-orange-200 transition-all cursor-pointer active:scale-[0.995] disabled:opacity-50"
           >
             {loading ? "Saving..." : "Save New Password"}

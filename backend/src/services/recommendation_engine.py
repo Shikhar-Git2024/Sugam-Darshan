@@ -1,36 +1,100 @@
-from services.forecast_service import forecast_service
-from utils.data_lookup import data_lookup
+from datetime import date, timedelta
 
+from services.forecast_service import forecast_service
+
+from utils.data_lookup import data_lookup
+import pandas as pd
 
 class RecommendationEngine:
 
-    SLOT_MAPPING = {
-        "06-09": "07:00 AM - 09:00 AM",
-        "09-12": "09:00 AM - 11:00 AM",
-        "12-15": "01:00 PM - 03:00 PM",
-        "15-18": "03:00 PM - 05:00 PM",
-        "18-21": "05:00 PM - 07:00 PM",
-        "21-24": "07:00 PM - 09:00 PM"
-    }
+    def calculate_score(
+        self,
+        visitors,
+        wait_time,
+        row
+    ):
 
-    def crowd_status(self, visitors):
+        score = 100
 
-        if visitors < 20000:
-            return "LOW"
+        score -= visitors / 4000
 
-        elif visitors < 50000:
-            return "MODERATE"
+        score -= wait_time / 3
 
-        elif visitors < 100000:
-            return "HIGH"
+        if row["is_festival"] == 1:
+            score -= 8
 
-        return "VERY HIGH"
+        if row["is_public_holiday"] == 1:
+            score -= 5
 
-    def estimate_wait_time(self, visitors):
+        if row["weekend"] == 1:
+            score -= 3
 
-        wait_time = int((visitors / 1500) + 5)
+        if row["temp_max"] > 38:
+            score -= 2
 
-        return max(5, min(wait_time, 180))
+        if row["rainfall"] > 15:
+            score -= 2
+
+        return round(
+            max(60, min(score, 100))
+        )
+    
+    def calculate_confidence(
+        self,
+        row
+    ):
+
+        confidence = 96
+
+        if row["is_festival"] == 1:
+            confidence -= 4
+
+        if row["weekend"] == 1:
+            confidence -= 2
+
+        if row["rainfall"] > 20:
+            confidence -= 2
+
+        return max(85, confidence)
+    
+    def build_reasons(
+        self,
+        forecast_date,
+        row,
+        crowd,
+        wait_time
+    ):
+
+        reasons = []
+
+        if crowd == "LOW":
+            reasons.append("Lowest predicted crowd")
+
+        elif crowd == "MODERATE":
+            reasons.append("Comfortable crowd level")
+
+        if wait_time <= 30:
+            reasons.append("Short waiting time")
+
+        day_name = pd.to_datetime(
+            forecast_date
+        ).strftime("%A")
+
+        if day_name in [
+            "Saturday",
+            "Sunday"
+        ]:
+            reasons.append("Weekend")
+        else:
+            reasons.append("Weekday")
+
+        if row["is_festival"] == 0:
+            reasons.append("No major festival")
+
+        if 25 <= row["temp_max"] <= 35:
+            reasons.append("Pleasant weather")
+
+        return reasons
 
     def recommend(
         self,
@@ -39,111 +103,224 @@ class RecommendationEngine:
         preferred_time=None
     ):
 
-        features = data_lookup.get_date_features(
-            visit_date
-        )
+        forecast = []
 
-        if not features:
+        # -----------------------------
+        # Build 7-Day Forecast
+        # -----------------------------
 
-            return {
-                "success": False,
-                "message": "Date not found in dataset"
-            }
+        for i in range(7):
 
-        slots = [
-            "06-09",
-            "09-12",
-            "12-15",
-            "15-18",
-            "18-21",
-            "21-24"
-        ]
+            current_date = (
+                date.today() +
+                timedelta(days=i)
+            )
 
-        results = []
+            current_date_str = (
+                current_date.isoformat()
+            )
 
-        for slot in slots:
-
-            slot_input = {
-                "Slot": slot,
-                "Month": features["Month"],
-                "Day_of_Week": features["Day_of_Week"],
-                "Season": features["Season"],
-                "Temperature_C": features["Temperature_C"],
-                "Festival_Importance":
-                    features["Festival_Importance"],
-                "Public_Holiday":
-                    features["Public_Holiday"],
-                "Long_Weekend_Flag":
-                    features["Long_Weekend_Flag"],
-                "School_Holiday_Flag":
-                    features["School_Holiday_Flag"],
-                "Weekend":
-                    features["Weekend"],
-                "Risk_Level_V4":
-                    features["Risk_Level_V4"]
-            }
-
-            predicted_visitors = (
-                forecast_service.predict_slot(
-                    slot_input
+            visitors = (
+                forecast_service.predict_crowd(
+                    current_date_str
                 )
             )
 
-            wait_time = self.estimate_wait_time(
-                predicted_visitors
+            wait_time = (
+                forecast_service.get_wait_time(
+                    visitors
+                )
             )
 
-            crowd_status = self.crowd_status(
-                predicted_visitors
+            crowd = (
+                forecast_service.get_crowd_level(
+                    visitors
+                )
             )
 
-            score = wait_time
+            row = data_lookup.get_full_row(
+                current_date_str
+            )
 
-            if crowd_status == "MODERATE":
-                score += 20
+            if row is None:
+                continue
 
-            elif crowd_status == "HIGH":
-                score += 40
+            score = self.calculate_score(
+                visitors,
+                wait_time,
+                row
+            )
 
-            elif crowd_status == "VERY HIGH":
-                score += 60
+            confidence = self.calculate_confidence(
+                row
+            )
 
-            if preferred_time:
+            reasons = self.build_reasons(
+                current_date_str,
+                row,
+                crowd,
+                wait_time
+            )
+            
+            forecast.append({
 
-                if preferred_time.lower() in slot.lower():
-                    score -= 15
+                "date": current_date_str,
 
-            results.append({
-                "slot": slot,
-                "display_slot":
-                    self.SLOT_MAPPING.get(
-                        slot,
-                        slot
-                    ),
-                "visitors":
-                    round(predicted_visitors),
-                "wait_time":
-                    wait_time,
-                "crowd_status":
-                    crowd_status,
-                "score":
-                    score
+                "day": current_date.strftime("%a"),
+
+                "expected_visitors": round(visitors),
+
+                "crowd_level": crowd,
+
+                "expected_wait": wait_time,
+
+                "score": score,
+
+                "confidence": confidence,
+
+                "reasons": reasons
+
             })
 
-        results = sorted(
-            results,
+        # -----------------------------
+        # AI Recommended Day
+        # -----------------------------
+
+        ai_day = max(
+            forecast,
             key=lambda x: x["score"]
         )
 
-        best_slot = results[0]
-        alternative_slot = results[1]
+        lowest = min(
+            forecast,
+            key=lambda x: x["expected_visitors"]
+        )
+
+        ai_reasons = ai_day["reasons"].copy()
+
+        if ai_day["date"] == lowest["date"]:
+            ai_reasons.insert(
+                0,
+                "Lowest predicted crowd this week"
+            )
+
+        # -----------------------------
+        # Selected Date
+        # -----------------------------
+
+        selected_row = data_lookup.get_full_row(
+            visit_date
+        )
+
+        if selected_row:
+
+            visitors = (
+                forecast_service.predict_crowd(
+                    visit_date
+                )
+            )
+
+            wait = (
+                forecast_service.get_wait_time(
+                    visitors
+                )
+            )
+
+            crowd = (
+                forecast_service.get_crowd_level(
+                    visitors
+                )
+            )
+
+            selected_day = {
+
+                "date":
+                    visit_date,
+
+                "day":
+                    pd.to_datetime(
+                        visit_date
+                    ).strftime("%a"),
+
+                "weather":{
+                    "temperature":
+                        selected_row["temp_max"],
+                    "humidity":
+                        selected_row["humidity"],
+                    "rainfall":
+                        selected_row["rainfall"]
+                },
+
+                "expected_visitors":
+                    round(visitors),
+
+                "crowd_level":
+                    crowd,
+
+                "expected_wait":
+                    wait
+
+            }
+
+        else:
+
+            selected_day = None
+
+        clean_forecast = []
+        for day in forecast:
+
+            clean_forecast.append({
+
+                "date": day["date"],
+
+                "day": day["day"],
+
+                "expected_visitors": day["expected_visitors"],
+
+                "crowd_level": day["crowd_level"],
+
+                "expected_wait": day["expected_wait"]
+
+            })
 
         return {
+
             "success": True,
-            "recommended_slot":
-                best_slot,
-            "alternative_slot":
-                alternative_slot
+
+            "ai_recommendation": {
+
+                "date":
+                    ai_day["date"],
+
+                "day":
+                    ai_day["day"],
+
+                "expected_visitors":
+                    ai_day["expected_visitors"],
+
+                "crowd_level":
+                    ai_day["crowd_level"],
+
+                "expected_wait":
+                    ai_day["expected_wait"],
+
+                "recommendation_score":
+                    ai_day["score"],
+
+                "confidence":
+                    ai_day["confidence"],
+
+                "reasons":
+                    ai_reasons
+
+            },
+
+            "selected_date":
+                selected_day,
+
+            "forecast":
+                clean_forecast
+
         }
 
 

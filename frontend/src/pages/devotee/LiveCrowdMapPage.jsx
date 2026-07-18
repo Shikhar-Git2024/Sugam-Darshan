@@ -1,85 +1,95 @@
+import React from "react";
 import { motion } from "framer-motion";
-import { Brain, Users, Clock3, TrendingUp, AlertCircle } from "lucide-react";
+import { Brain, Users, Clock3, TrendingUp, Sparkles, MapPin } from "lucide-react";
+import crowdMapBanner from "../../assets/images/crowd-map-banner.png";
 
-// Expanded architecture data
-const templeAreas = [
-  { id: "garbh", name: "Garbh Griha", crowd: 95, wait: "25 Min", x: 45, y: 45, r: 8 },
-  { id: "nritya", name: "Nritya Mandap", crowd: 75, wait: "18 Min", x: 45, y: 30, w: 10, h: 8 },
-  { id: "sabha", name: "Sabha Mandap", crowd: 65, wait: "15 Min", x: 45, y: 58, w: 12, h: 10 },
-  { id: "rang", name: "Rang Mandap", crowd: 55, wait: "12 Min", x: 45, y: 72, w: 12, h: 8 },
-  { id: "kirtan", name: "Kirtan Mandap", crowd: 35, wait: "8 Min", x: 45, y: 84, w: 12, h: 8 },
-  { id: "shikhar", name: "Main Shikhar", crowd: 85, wait: "20 Min", x: 45, y: 45, r: 4, isShikhar: true },
-  { id: "small1", name: "Temple A", crowd: 45, wait: "10 Min", x: 20, y: 20, w: 8, h: 8 },
-  { id: "small2", name: "Temple B", crowd: 40, wait: "9 Min", x: 70, y: 20, w: 8, h: 8 },
-];
-
-function getColor(crowd) {
-  if (crowd < 40) return "#22c55e"; // Green
-  if (crowd < 70) return "#eab308"; // Yellow
-  return "#ef4444"; // Red
-}
+const IS_MAP_LIVE = false;
 
 export default function EnhancedCrowdMap() {
-  const bestArea = templeAreas.reduce((a, b) => (a.crowd < b.crowd ? a : b));
-
   return (
-    <div className="min-h-screen bg-slate-50 p-6 md:p-12">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-10">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">Temple Crowd Live-Map</h1>
-          <p className="text-slate-500 mt-2">Real-time occupancy and wait-time analytics</p>
+    <div className="min-h-screen bg-[#fffdf8] text-slate-900">
+        
+        {/* Header Block - Consistent with SOS Page */}
+        <section className="relative h-[200px] overflow-hidden">
+          {/* Background */}
+          <img
+              src={crowdMapBanner}
+              alt="Live Crowd Map"
+              className="absolute inset-0 w-full h-full object-cover object-[center_40%]"
+          />
+
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-black/35" />
+
+          {/* Content */}
+          <div className="relative z-10 h-full flex items-center px-8">
+              <div className="max-w-2xl">
+                  <h1
+                      className="text-4xl md:text-5xl font-black text-white"
+                      style={{
+                          textShadow: "0 2px 10px rgba(0,0,0,0.25)",
+                      }}
+                  >
+                      Live Crowd Map
+                  </h1>
+                  <p className="mt-4 text-[#FFF7EA] text-lg leading-relaxed">
+                      View live crowd conditions across the temple premises and plan a smoother, more comfortable Darshan.
+                  </p>
+              </div>
+          </div>
+        </section>
+
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-6">
+
+        {/* Architectural View Container */}
+        <div className="bg-white rounded-2xl border border-[#f3e3c3] shadow-3xs overflow-hidden min-h-[400px] flex items-center justify-center p-6">
+          
+          {!IS_MAP_LIVE ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center max-w-lg py-8"
+            >
+              <div className="w-20 h-20 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-6 border border-amber-100">
+                <Sparkles size={36} />
+              </div>
+
+              <span className="inline-flex items-center rounded-full bg-amber-100 text-amber-800 px-3 py-1 text-xs font-bold uppercase tracking-widest mb-4">
+                Coming Soon
+              </span>
+
+              <h2 className="text-2xl font-black text-slate-950">Intelligent Crowd Mapping</h2>
+              <p className="text-sm font-medium text-slate-700 mt-3 leading-relaxed">
+                We are currently integrating real-time sensor data and AI-navigation models. 
+                This feature will allow you to view congestion density and receive 
+                optimal path suggestions for a peaceful Darshan.
+              </p>
+            </motion.div>
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              {/* Map SVG/Canvas component goes here */}
+            </div>
+          )}
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        {/* Features Grid - Refined to match SOS Card styles */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {[
-            { label: "Total Zones", val: templeAreas.length, icon: Users, color: "text-violet-600" },
-            { label: "High Density", val: templeAreas.filter(x => x.crowd > 70).length, icon: TrendingUp, color: "text-red-500" },
-            { label: "Avg Wait", val: "18 Min", icon: Clock3, color: "text-blue-500" },
-            { label: "Optimal Zone", val: bestArea.name, icon: Brain, color: "text-green-500" },
-          ].map((stat, i) => (
-            <div key={i} className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-              <stat.icon className={`mb-2 ${stat.color}`} />
-              <p className="text-sm text-slate-400">{stat.label}</p>
-              <h2 className="text-xl font-bold">{stat.val}</h2>
+            { icon: Users, title: "Live Occupancy", text: "Real-time density analytics per zone." },
+            { icon: Clock3, title: "Smart Wait-Times", text: "Estimated queue duration for entry." },
+            { icon: TrendingUp, title: "Crowd Heatmaps", text: "Visual guidance on congestion levels." },
+            { icon: Brain, title: "AI-Route Planning", text: "Dynamic pathing to avoid heavy crowds." },
+          ].map((feature, idx) => (
+            <div key={idx} className="bg-white p-4 rounded-xl border border-[#f3e3c3] shadow-3xs flex gap-4 items-start">
+              <div className="p-2.5 rounded-lg bg-slate-50 border border-[#f3e3c3] text-rose-600 shrink-0">
+                <feature.icon size={20} />
+              </div>
+              <div className="space-y-0.5">
+                <span className="text-sm font-bold text-slate-950 block">{feature.title}</span>
+                <p className="text-xs font-medium text-slate-700 leading-snug">{feature.text}</p>
+              </div>
             </div>
           ))}
-        </div>
-
-        {/* Architectural View */}
-        <div className="bg-white rounded-[2rem] p-6 shadow-xl border border-slate-100">
-          <svg viewBox="0 0 100 100" className="w-full h-[500px] overflow-visible">
-            {/* Parikrama Path */}
-            <rect x="5" y="5" width="90" height="90" rx="10" fill="none" stroke="#e2e8f0" strokeWidth="2" strokeDasharray="4 4" />
-            
-            {templeAreas.map((area) => (
-              <motion.g key={area.id} whileHover={{ scale: 1.05 }} className="cursor-pointer">
-                {area.r ? (
-                  <circle cx={area.x} cy={area.y} r={area.r} fill={getColor(area.crowd)} />
-                ) : (
-                  <rect x={area.x} y={area.y} width={area.w} height={area.h} rx="3" fill={getColor(area.crowd)} />
-                )}
-                <text x={area.x} y={area.y - (area.r || 0) - 2} textAnchor="middle" fontSize="3" className="font-semibold fill-slate-700">
-                  {area.name}
-                </text>
-              </motion.g>
-            ))}
-          </svg>
-        </div>
-
-        {/* Smart Recommendations */}
-        <div className="mt-8 bg-slate-900 rounded-3xl p-8 text-white flex flex-col md:flex-row items-center justify-between gap-6">
-          <div>
-            <h2 className="text-2xl font-bold flex items-center gap-2">
-              <AlertCircle className="text-yellow-400" /> AI Optimization
-            </h2>
-            <p className="mt-2 text-slate-300 max-w-lg">
-              Based on current flow, we suggest diverting to <b>{bestArea.name}</b>. It is currently operating at only {bestArea.crowd}% capacity.
-            </p>
-          </div>
-          <button className="bg-white text-slate-900 px-8 py-3 rounded-full font-bold hover:bg-slate-200 transition">
-            View Directions
-          </button>
         </div>
       </div>
     </div>

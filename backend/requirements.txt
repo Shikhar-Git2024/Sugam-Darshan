@@ -24,3 +24,6 @@ email-validator
 fastapi-mail
 google-auth
 google-auth-oauthlib
+apscheduler
+qrcode
+Pillow

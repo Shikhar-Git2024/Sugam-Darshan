@@ -5,7 +5,7 @@ import {
   Mail, Lock, Eye, EyeOff, ArrowLeft, AlertTriangle, LogOut, LayoutDashboard, 
   Sparkles, Users, CalendarDays, Compass, ShieldCheck, ShieldAlert, 
   Map, Sun, Bell, Volume2, Cloud, HelpCircle, FileText, CheckCircle2, 
-  Award, QrCode, PhoneCall, HeartPulse, User, UserX, Printer, Share2, Globe, Flame // <-- Added User here
+  Award, QrCode, PhoneCall, HeartPulse, User, UserX, Printer, Share2, Globe, Flame, ShieldEllipsis
 } from "lucide-react";
 import api from "../../services/api";
 import GoogleSignInButton from "../../components/GoogleSignInButton";
@@ -64,6 +64,13 @@ export default function DevoteeLoginPage() {
       ADMIN: "/admin/dashboard"
     };
     navigate(pathMap[activeSessionUser.role] || "/", { replace: true });
+  };
+
+  // Gracefully handles routing unverified users instantly to verification workspace
+  const handleRoutingToVerification = () => {
+    if (!email) return;
+    localStorage.setItem("pending_verification_email", email);
+    navigate("/devotee/verify-email", { state: { email } });
   };
 
   const handleLogin = async (e) => {
@@ -277,12 +284,26 @@ export default function DevoteeLoginPage() {
 
             {error && (
               <motion.div 
-                initial={{ opacity: 0, x: -6 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="p-3.5 bg-red-50 border border-red-200 text-red-800 text-xs font-bold rounded-xl flex items-start gap-2"
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-3.5 bg-red-50 border border-red-200 text-red-800 text-xs font-bold rounded-xl flex flex-col items-start gap-2"
               >
-                <AlertTriangle size={14} className="text-red-600 shrink-0 mt-0.5" />
-                <span>{error}</span>
+                <div className="flex items-start gap-2 w-full">
+                  <AlertTriangle size={14} className="text-red-600 shrink-0 mt-0.5" />
+                  <span className="flex-1">{error}</span>
+                </div>
+                
+                {/* Improvement: Appends contextual action button upon encountering email restriction error block */}
+                {error.includes("verify your email") && (
+                  <button
+                    type="button"
+                    onClick={handleRoutingToVerification}
+                    className="mt-1 ml-6 inline-flex items-center gap-1 text-xs font-black text-[#ea580c] hover:text-[#c2410c] hover:underline bg-transparent border-0 p-0 cursor-pointer uppercase tracking-wider transition"
+                  >
+                    <ShieldEllipsis size={13} />
+                    Verify Email Now
+                  </button>
+                )}
               </motion.div>
             )}
 

@@ -18,15 +18,13 @@ export default function DashboardNavbar() {
       title: "Main Services",
       items: [
         { name: "Dashboard", icon: LayoutDashboard, path: "/devotee/dashboard" },
-        { name: "Smart Planner", icon: Sparkles, path: "/devotee/planner" },
-        { name: "Booking System", icon: CalendarDays, path: "/devotee/booking" },
-        { name: "Booking History", icon: CalendarCheck, path: "/devotee/my-bookings" },
+        { name: "Smart Booking", icon: Sparkles, path: "/devotee/planner" },
+        { name: "My Bookings", icon: CalendarCheck, path: "/devotee/my-bookings" },
       ]
     },
     {
       title: "Temple & Guidance",
       items: [
-        { name: "Crowd Intelligence", icon: BarChart3, path: "/devotee/crowd-intelligence" },
         { name: "Temple Navigation", icon: MapPinned, path: "/devotee/navigation" },
         { name: "Live Crowd Map", icon: Map, path: "/devotee/live-map" },
         { name: "Spiritual Guide", icon: BookOpen, path: "/devotee/spiritual-companion" },

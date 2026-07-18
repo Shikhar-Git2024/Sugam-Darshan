@@ -71,12 +71,24 @@ export default function DevoteeRegisterPage() {
         password: formData.password
       };
 
-      await api.post("/register", payload);
+      const res = await api.post("/register", payload);
       setIsSuccessfullyRegistered(true);
       
+      // Clean up form inputs immediately after completion
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        password: "",
+        confirmPassword: ""
+      });
+      setAgreeToTerms(false);
+      
       setTimeout(() => {
-        navigate("/devotee/login", { 
-          state: { successMsg: "Account created successfully. Please log in to continue." } 
+        navigate("/devotee/verify-email", { 
+          state: { 
+            email: res.data.email 
+          } 
         });
       }, 1500);
 
@@ -113,9 +125,9 @@ export default function DevoteeRegisterPage() {
                 <CheckCircle2 size={28} className="animate-bounce" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-xl font-black text-slate-950 m-0 tracking-tight">Account Created</h3>
+                <h3 className="text-xl font-black text-slate-950 m-0 tracking-tight">Registration Successful</h3>
                 <p className="text-sm font-semibold text-slate-600 leading-relaxed m-0 pt-1">
-                  Redirecting you to login...
+                  We've sent a verification code to your email.<br />Redirecting to Email Verification...
                 </p>
               </div>
               <div className="pt-2 flex justify-center">

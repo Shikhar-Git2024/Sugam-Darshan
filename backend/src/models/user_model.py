@@ -2,7 +2,7 @@ from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy import DateTime
-
+from sqlalchemy import Boolean
 from datetime import datetime
 
 from config.database import Base
@@ -31,8 +31,28 @@ class User(Base):
     phone = Column(
         String,
         unique=True,
-        nullable=True      # Changed
+        nullable=True
     )
+
+    language = Column(
+        String,
+        default="English"
+    )
+
+    visit_time = Column(
+        String,
+        default="Morning"
+    )
+
+    emergency_name = Column(
+        String,
+        nullable=True
+    )
+
+    emergency_phone = Column(
+        String,
+        nullable=True
+)
 
     password_hash = Column(
         String,
@@ -70,6 +90,21 @@ class User(Base):
     )
 
     reset_token_expiry = Column(
+        DateTime,
+        nullable=True
+    )
+
+    email_verified = Column(
+        Boolean,
+        default=False
+    )
+
+    email_otp = Column(
+        String,
+        nullable=True
+    )
+
+    email_otp_expiry = Column(
         DateTime,
         nullable=True
     )

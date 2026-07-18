@@ -101,12 +101,12 @@ export default function MissingPersonPage() {
         description: form.description,
         latitude: locationCoordinates ? locationCoordinates.latitude.toString() : "0",
         longitude: locationCoordinates ? locationCoordinates.longitude.toString() : "0",
-        location_name: form.location,
         missing_person_name: form.name,
-        missing_person_age: parseInt(form.age) || 0,
+        missing_person_age: Number(form.age),
         missing_person_gender: form.gender,
         contact_number: form.contact,
-        last_seen_time: form.time,
+        location_name: activeMode === "REPORT" ? form.location : "",
+        last_seen_time: activeMode === "REPORT" ? form.time : "",
         image_path: imagePath,
         incident_ticket: generatedTicket
       });
@@ -132,7 +132,7 @@ export default function MissingPersonPage() {
           <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center mx-auto shadow-3xs mb-5">
             <CheckCircle2 size={36} className="animate-pulse" />
           </div>
-          <h2 className="text-2xl font-black text-slate-950 m-0">Emergency Case Registered</h2>
+          <h2 className="text-2xl font-black text-slate-950 m-0">{activeMode === "REPORT" ? "Missing Person Report Registered" : "Found Person Registered"}</h2>
           <p className="mt-2 text-sm font-semibold text-slate-700 leading-relaxed m-0">
             Your report has been broadcast successfully. On-ground search operations, helpdesk speakers, and patrol vectors have been synchronized.
           </p>
@@ -163,7 +163,7 @@ export default function MissingPersonPage() {
 
   return (
     <div className="min-h-screen bg-[#fffdf8] text-slate-800 px-4 py-6 md:p-6 text-left antialiased">
-      <div className="max-w-3xl mx-auto space-y-6">
+      <div className="max-w-6xl mx-auto space-y-6">
         
         {/* Navigation Top Title Header */}
         <div className="flex items-center gap-4">
@@ -222,7 +222,14 @@ export default function MissingPersonPage() {
 
         {/* Main Processing Request Intake Form Container */}
         <form 
-          onSubmit={(e) => { e.preventDefault(); setShowConfirmModal(true); }} 
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (form.contact.length !== 10) {
+                alert("Please enter a valid 10-digit mobile number.");
+                return;
+            }
+            setShowConfirmModal(true);
+        }}
           className="bg-white rounded-2xl p-5 md:p-6 border border-[#f3e3c3] shadow-3xs space-y-5"
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -246,10 +253,22 @@ export default function MissingPersonPage() {
               <div className="border border-[#f3e3c3] rounded-xl bg-[#fffdf8] px-3.5 py-3 focus-within:ring-2 focus:ring-[#ea580c]">
                 <input 
                   required 
-                  type="number" 
+                  type="number"
+                  min="1"
+                  max="120"
                   placeholder="e.g. 12" 
                   value={form.age}
-                  onChange={e => setForm({...form, age: e.target.value})}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "") {
+                        setForm({ ...form, age: "" });
+                        return;
+                    }
+                    const age = Number(value);
+                    if (age >= 1 && age <= 120) {
+                        setForm({ ...form, age: value });
+                    }
+                }}
                   className="w-full border-0 bg-transparent p-0 text-sm font-semibold text-slate-900 placeholder-slate-400 focus:outline-hidden" 
                 />
               </div>
@@ -278,11 +297,23 @@ export default function MissingPersonPage() {
             <div className="relative border border-[#f3e3c3] rounded-xl bg-[#fffdf8] px-3.5 py-3 flex items-center gap-3 focus-within:ring-2 focus:ring-[#ea580c]">
               <MapPin size={16} className="text-slate-400 shrink-0" />
               <input 
-                required 
+                required={activeMode === "REPORT"}
+                disabled={activeMode === "FOUND"}
                 type="text"
-                placeholder="e.g. Near Corridor Gate No. 2 Comfort Desk" 
-                value={form.location}
-                onChange={e => setForm({...form, location: e.target.value})}
+                placeholder={
+                  activeMode === "FOUND"
+                    ? "Not required when reporting a found person"
+                    : "e.g. Near Corridor Gate No. 2 Comfort Desk"
+                }
+                value={
+                  activeMode === "FOUND"
+                    ? ""
+                    : form.location
+                }
+                onChange={(e) =>
+                  activeMode === "REPORT" &&
+                  setForm({ ...form, location: e.target.value })
+                }
                 className="w-full border-0 bg-transparent p-0 text-sm font-semibold text-slate-900 placeholder-slate-400 focus:outline-hidden" 
               />
             </div>
@@ -294,9 +325,14 @@ export default function MissingPersonPage() {
               <div className="relative border border-[#f3e3c3] rounded-xl bg-[#fffdf8] px-3.5 py-2.5 flex items-center gap-3 focus-within:ring-2 focus:ring-[#ea580c]">
                 <Clock3 size={16} className="text-slate-400 shrink-0" />
                 <input 
-                  required 
-                  type="time" 
-                  value={form.time}
+                  required={activeMode === "REPORT"}
+                  disabled={activeMode === "FOUND"}
+                  type="time"
+                  value={
+                    activeMode === "FOUND"
+                      ? ""
+                      : form.time
+                  }
                   onChange={e => setForm({...form, time: e.target.value})}
                   className="w-full border-0 bg-transparent p-0 text-sm font-semibold text-slate-900 focus:outline-hidden cursor-pointer h-6" 
                 />
@@ -307,13 +343,24 @@ export default function MissingPersonPage() {
               <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block px-0.5">Reporter Contact Number</label>
               <div className="relative border border-[#f3e3c3] rounded-xl bg-[#fffdf8] px-3.5 py-3 flex items-center gap-3 focus-within:ring-2 focus:ring-[#ea580c]">
                 <Phone size={16} className="text-slate-400 shrink-0" />
-                <input 
-                  required 
-                  type="tel" 
-                  placeholder="+91 XXX XXX XXXX" 
+                <input
+                  required
+                  type="tel"
+                  inputMode="numeric"
+                  pattern="[0-9]{10}"
+                  maxLength={10}
+                  placeholder="Enter 10-digit mobile number"
                   value={form.contact}
-                  onChange={e => setForm({...form, contact: e.target.value})}
-                  className="w-full border-0 bg-transparent p-0 text-sm font-semibold text-slate-900 placeholder-slate-400 focus:outline-hidden" 
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, "");
+                    if (value.length <= 10) {
+                      setForm({
+                        ...form,
+                        contact: value,
+                      });
+                    }
+                  }}
+                  className="w-full border-0 bg-transparent p-0 text-sm font-semibold text-slate-900 placeholder-slate-400 focus:outline-hidden"
                 />
               </div>
             </div>
@@ -375,7 +422,7 @@ export default function MissingPersonPage() {
             disabled={sending}
             className="w-full py-4 bg-[#ea580c] hover:bg-[#c2410c] text-white font-black text-sm tracking-widest shadow-md shadow-orange-100 uppercase border-0 transition-all cursor-pointer rounded-xl active:scale-[0.995]"
           >
-            {sending ? "Registering Case..." : "Submit Missing Person Report"}
+            {sending ? "Registering Case..." : activeMode === "REPORT" ? "Submit Missing Person Report" : "Register Found Person"}
           </button>
         </form>
 
@@ -418,7 +465,7 @@ export default function MissingPersonPage() {
                   <AlertCircle size={20} />
                 </div>
                 <div className="flex-1 space-y-0.5 text-left">
-                  <h3 className="text-base font-black text-slate-950 m-0">Confirm Registration</h3>
+                  <h3 className="text-base font-black text-slate-950 m-0">{activeMode === "REPORT" ? "Confirm Missing Person Report" : "Confirm Found Person Registration"}</h3>
                   <p className="text-sm font-semibold text-slate-700 leading-normal m-0 pt-0.5">
                     This will instantly dispatch this report to the temple control center, public announcer networks, and patrolling teams.
                   </p>

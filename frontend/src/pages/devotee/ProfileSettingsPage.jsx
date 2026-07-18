@@ -85,16 +85,17 @@ export default function ProfileSettingsPage() {
         language: profile.language
       };
       localStorage.setItem("user", JSON.stringify(updatedUserToken));
+      sessionStorage.setItem("user", JSON.stringify(updatedUserToken));
       localStorage.setItem("profile_preferences", JSON.stringify(profile));
       
       setInitialProfile(profile);
+      await fetchProfileDetails();
       setShowToast(true);
       setTimeout(() => setShowToast(false), 4000);
     } catch (error) {
       console.error("Profile write exception:", error);
-      localStorage.setItem("profile_preferences", JSON.stringify(profile));
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 4000);
+      alert("Unable to save your profile. Please try again.");
+      return;
     } finally {
       setSaving(false);
     }
@@ -115,7 +116,7 @@ export default function ProfileSettingsPage() {
 
   return (
     <div className="min-h-screen bg-[#fffdf8] text-slate-800 font-sans antialiased text-left px-4 py-6 md:p-6">
-      <div className="max-w-3xl mx-auto space-y-6">
+      <div className="max-w-6xl mx-auto space-y-6">
         
         {/* Success Toast Notification */}
         <AnimatePresence>
@@ -195,13 +196,29 @@ export default function ProfileSettingsPage() {
                 </label>
                 <div className="relative border border-[#f3e3c3] rounded-xl bg-[#fffdf8] px-3.5 py-3 flex items-center gap-3 focus-within:ring-2 focus-within:ring-[#ea580c]">
                   <Phone size={14} className="text-slate-400 shrink-0" />
-                  <input 
-                    type="tel" 
-                    value={profile.phone} 
-                    onChange={e => setProfile({...profile, phone: e.target.value})} 
-                    className="w-full border-0 bg-transparent p-0 text-sm font-semibold text-slate-900 placeholder-slate-400 focus:outline-hidden" 
-                    placeholder="+91 XXXXX XXXXX" 
+                  <input
+                    type="tel"
+                    inputMode="numeric"
+                    maxLength={10}
+                    value={profile.phone}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, "");
+
+                      if (value.length <= 10) {
+                        setProfile({
+                          ...profile,
+                          phone: value,
+                        });
+                      }
+                    }}
+                    className="w-full border-0 bg-transparent p-0 text-sm font-semibold text-slate-900 placeholder-slate-400 focus:outline-hidden"
+                    placeholder="Enter 10-digit mobile number"
                   />
+                  {profile.phone.length > 0 && profile.phone.length < 10 && (
+                    <p className="mt-1 text-xs text-red-600 font-medium">
+                      Please enter a valid 10-digit mobile number.
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -240,7 +257,13 @@ export default function ProfileSettingsPage() {
                   <input 
                     type="text"
                     value={profile.emergencyName} 
-                    onChange={e => setProfile({...profile, emergencyName: e.target.value})} 
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^a-zA-Z\s.-]/g, "");
+                      setProfile({
+                        ...profile,
+                        emergencyName: value,
+                      });
+                    }}
                     className="w-full border-0 bg-transparent p-0 text-sm font-semibold text-slate-900 placeholder-slate-400 focus:outline-hidden" 
                     placeholder="Enter guardian full name" 
                   />
@@ -253,13 +276,28 @@ export default function ProfileSettingsPage() {
                 </label>
                 <div className="relative border border-[#f3e3c3] rounded-xl bg-[#fffdf8] px-3.5 py-3 flex items-center gap-3 focus-within:ring-2 focus:ring-[#ea580c]">
                   <Phone size={14} className="text-slate-400 shrink-0" />
-                  <input 
+                  <input
                     type="tel"
-                    value={profile.emergencyPhone} 
-                    onChange={e => setProfile({...profile, emergencyPhone: e.target.value})} 
-                    className="w-full border-0 bg-transparent p-0 text-sm font-semibold text-slate-900 placeholder-slate-400 focus:outline-hidden" 
-                    placeholder="+91 XXXXX XXXXX" 
+                    inputMode="numeric"
+                    maxLength={10}
+                    value={profile.emergencyPhone}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, "");
+                      if (value.length <= 10) {
+                        setProfile({
+                          ...profile,
+                          emergencyPhone: value,
+                        });
+                      }
+                    }}
+                    className="w-full border-0 bg-transparent p-0 text-sm font-semibold text-slate-900 placeholder-slate-400 focus:outline-hidden"
+                    placeholder="Enter 10-digit mobile number"
                   />
+                  {profile.emergencyPhone.length > 0 && profile.emergencyPhone.length < 10 && (
+                    <p className="mt-1 text-xs text-red-600 font-medium">
+                      Please enter a valid 10-digit emergency contact number.
+                    </p>
+                  )}
                 </div>
               </div>
 

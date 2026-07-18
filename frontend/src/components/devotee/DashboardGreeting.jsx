@@ -1,55 +1,56 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Clock, Calendar, Compass } from "lucide-react";
+import heroBanner from "../../assets/images/header-banner.png";
 
 const FESTIVAL_REGISTRY = {
-  "2026-01-14": "Uttarayan / Makar Sankranti",
+  "2026-01-14": "Uttarayan / Makar Sankranti / Dhanurmas Ends",
   "2026-01-23": "Vasant Panchami",
   "2026-02-01": "Maghi Purnima",
   "2026-02-15": "Mahashivratri",
-  "2026-03-02": "Holi / Purnima",
-  "2026-03-03": "Dhuleti / Vasantotsav",
-  "2026-03-19": "Gudi Padwa / Chaitra Navratri Starts",
+  "2026-03-02": "Holi / Purnima / Holashtak Ends",
+  "2026-03-03": "Dhuleti / Vasantotsav / Purnima",
+  "2026-03-19": "Gudi Padwa / Chaitra Starts / Chaitra Navratri Starts",
   "2026-03-26": "Ram Navami / Chaitra Navratri Ends",
   "2026-03-28": "Ramnavami Annakut Mahotsav",
-  "2026-04-02": "Shree Hanuman Jayanti",
+  "2026-04-02": "Shree Hanuman Jayanti / Chaitri Purnima",
   "2026-04-19": "Akshay Trutia (Akha Trij)",
   "2026-04-25": "Sita Navami – Janaki Jayanti",
-  "2026-05-01": "Buddha Purnima",
+  "2026-05-01": "Buddha (Vaishakhi) Purnima",
   "2026-05-17": "Adhik Mas Starts",
   "2026-06-16": "Ram Rathotsav - Rath Yatra",
   "2026-06-27": "Vatasavitri Vrata Starts",
-  "2026-06-29": "Devsnan Purnima",
+  "2026-06-29": "Devsnan Purnima / Vatasavitri Vrata Ends",
   "2026-07-25": "Devpodhi Ekadashi / Gauri Vrata Starts",
   "2026-07-27": "Jayaparvati Vrata Starts",
-  "2026-07-29": "Guru Purnima / Vyas Purnima",
+  "2026-07-29": "Guru Purnima / Vyas Purnima / Gauri Vrata Ends",
   "2026-08-01": "Jayaparvati Vrata Ends",
-  "2026-08-12": "Divaso / Hariyali Amavasya",
+  "2026-08-12": "Divaso / Hariyali Amavasya / Evrta-Jeevrat",
   "2026-08-17": "Nag Panchami",
   "2026-08-18": "Randhan Chhath",
   "2026-08-19": "Sitala Satam",
   "2026-08-28": "Rakshabandhan / Nariyeli Purnima",
   "2026-09-04": "Janmashtami – Shree Krishna Jayanti",
   "2026-09-05": "Krishna Jayanti Annakut Mahotsav",
-  "2026-09-14": "Ganesh Chaturthi",
-  "2026-09-15": "Rushi Panchami",
+  "2026-09-14": "Ganesh Chaturthi / Kevda Trij",
+  "2026-09-15": "Rushi Panchami / Sama Pancham",
   "2026-09-19": "Dharo Atham",
   "2026-09-26": "Bhadarvi Purnima",
   "2026-09-27": "Shradh Paksha Starts",
-  "2026-10-10": "Sarvapitri Amavasya",
-  "2026-10-11": "Navaratri Starts",
-  "2026-10-20": "Dashera (Victory Day of Shri Rama)",
+  "2026-10-10": "Sarvapitri Amavasya / Shradh Paksha Ends",
+  "2026-10-11": "Navaratri Starts / Aso Starts",
+  "2026-10-20": "Dashera (Victory Day of Shri Rama) / Navaratri Ends",
   "2026-10-25": "Sharad Purnima / Dashera Havan",
-  "2026-10-29": "Karva Choth",
+  "2026-10-29": "Karva Choth - Sankasht Chaturthi",
   "2026-11-05": "Vagh Baras / Rama Ekadashi",
   "2026-11-06": "Dhanterash",
   "2026-11-07": "Kali Chaudash",
   "2026-11-08": "Diwali (Shri Rama Back in Ayodhya)",
-  "2026-11-10": "New Year (Coronation Day)",
-  "2026-11-11": "Bhai Bij",
-  "2026-11-14": "Labh Pancham / Shree Panchmi",
-  "2026-11-24": "Dev Diwali / Purnima",
-  "2026-12-16": "Dhanarak Starts",
+  "2026-11-10": "New Year (Coronation Day) / Kartik Starts",
+  "2026-11-11": "Bhai Bij / Bhai Bij",
+  "2026-11-14": "Labh Pancham / Shree Panchmi / New Year Annakut Mahotsav",
+  "2026-11-24": "Dev Diwali / Purnima / Guru Nanak Jayanti",
+  "2026-12-16": "Dhanarak / Kamuhurta Starts",
   "2026-12-23": "Purnima / Shri Dattatrey Jayanti"
 };
 
@@ -65,7 +66,7 @@ export default function DashboardGreeting({ user = {} }) {
 
   const greetingConfig = useMemo(() => {
     if (currentHour >= 5 && currentHour < 12) {
-      return { title: "Good Morning", subtitle: "Plan your temple visit with live crowd updates and weather information." };
+      return { title: "Good Morning", subtitle: "Plan your Darshan with live crowd intelligence, weather insights, and AI-powered recommendations for a smooth pilgrimage." };
     } else if (currentHour >= 12 && currentHour < 17) {
       return { title: "Good Afternoon", subtitle: "Check today's crowd levels and enjoy a smooth Darshan experience." };
     } else {
@@ -105,63 +106,50 @@ export default function DashboardGreeting({ user = {} }) {
 
   const directDevoteeName = user.name || "Devotee";
 
-  return (
-    <motion.div 
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: "easeOut" }}
-      className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 items-center bg-gradient-to-br from-[#FFFDF8] via-[#FFF9F2] to-[#FFF6ED] border border-amber-100/60 p-6 rounded-2xl shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-left"
-    >
-      <div className="md:col-span-2 space-y-3">
-        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <h1 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight m-0">
-            {greetingConfig.title},
-            <span className="block text-2xl md:text-3xl bg-gradient-to-r from-orange-700 to-amber-600 bg-clip-text text-transparent font-black mt-1">
-              {directDevoteeName}
-            </span>
-          </h1>
-
-          {activeFestival && (
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 text-orange-800 border border-orange-200/60 text-xs font-bold tracking-wide shadow-2xs self-center"
-            >
-              <span className="text-xs animate-pulse">🪔</span>
-              <span>Today: {activeFestival}</span>
-            </motion.div>
-          )}
-        </div>
-
-        <p className="text-slate-600 font-medium text-xs md:text-sm tracking-tight leading-relaxed max-w-xl m-0">
+return (
+  <motion.section
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    className="relative w-full h-[260px] lg:h-[280px] overflow-hidden border-b border-white/20 shadow-[inset_0_-20px_100px_rgba(0,0,0,0.5)]"
+    style={{
+      backgroundImage: `url(${heroBanner})`,
+      backgroundSize: "100% 100%",
+      backgroundPosition: "center",
+    }}
+  >
+    <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent"></div>
+    
+    <div className="relative z-10 h-full max-w-6xl mx-auto px-6 flex flex-col justify-center">
+      <div className="max-w-2xl">
+        <h1 className="text-xl md:text-2xl font-medium text-white/90 tracking-wide drop-shadow-md">
+          {greetingConfig.title},
+        </h1>
+        <h2 className="text-4xl md:text-5xl font-black text-orange-300 drop-shadow-[0_2px_10px_rgba(253,186,116,0.5)]">
+          {directDevoteeName}
+        </h2>
+        <p className="text-white/70 font-medium text-sm md:text-base mt-1 mb-4 drop-shadow-sm">
           {greetingConfig.subtitle}
         </p>
 
-        <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 pt-0.5">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping shrink-0" />
-          <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 absolute" />
-          <span className="pl-1 text-slate-500 font-medium">Today's Darshan • <strong className="text-emerald-700 font-bold">Available</strong></span>
-        </div>
-      </div>
-
-      <div className="w-full flex md:justify-end">
-        <div className="w-full sm:w-auto min-w-[240px] flex items-center gap-4 bg-white border border-amber-100/60 p-3.5 rounded-xl shadow-2xs hover:border-orange-200 hover:shadow-xs transition-all duration-300 group">
-          <div className="p-2.5 bg-amber-50/60 rounded-lg text-[#ea580c] border border-amber-100/30 shrink-0 group-hover:bg-orange-50 group-hover:rotate-12 transition-all duration-300">
-            <Compass size={18} />
+        {/* Info Container */}
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-3">
+            <span className="flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full backdrop-blur-sm border border-white/10 text-white/90 text-sm">
+              <Clock size={16} /> {timeString}
+            </span>
+            <span className="flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full backdrop-blur-sm border border-white/10 text-white/90 text-sm">
+              <Calendar size={16} /> {dateString}
+            </span>
           </div>
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 font-mono text-sm font-bold text-slate-900 tracking-tight">
-              <Clock size={13} className="text-slate-400 group-hover:text-orange-600 transition-colors duration-300" />
-              <span>{timeString}</span>
-            </div>
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 tracking-tight">
-              <Calendar size={12} className="text-slate-400" />
-              <span>{dateString}</span>
-            </div>
+
+          {/* Darshan Status moved to the left and color updated to Amber */}
+          <div className="inline-flex items-center gap-2 text-amber-400 font-bold text-sm bg-black/30 px-3 py-1 rounded-full w-fit border border-amber-500/30">
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shadow-[0_0_8px_rgba(251,191,36,0.8)]"></span>
+            <span>Darshan Available</span>
           </div>
         </div>
       </div>
-
-    </motion.div>
-  );
+    </div>
+  </motion.section>
+);
 }

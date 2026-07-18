@@ -1,6 +1,7 @@
 from models.user_model import User
 from models.booking_model import Booking
 from models.waiting_list_model import WaitingList
+from services.live_crowd_service import live_crowd_service
 
 
 class DashboardController:
@@ -115,18 +116,44 @@ class DashboardController:
 
     def get_crowd_status(self):
 
+        live = live_crowd_service.get_live_status()
+
         return {
-            "crowd_status": "MODERATE",
-            "estimated_visitors": 40922,
-            "wait_time": 32
+            "crowd_status": live["status"],
+            "estimated_visitors": live["current_visitors"],
+            "expected_today": live["expected_today"],
+            "wait_time": live["wait_time"],
+            "last_updated": live["last_updated"]
         }
 
 
     def get_risk_status(self):
 
+        live = live_crowd_service.get_live_status()
+        visitors = live["current_visitors"]
+
+        if visitors < 15000:
+            risk = "LOW"
+            score = 20
+
+        elif visitors < 30000:
+            risk = "MODERATE"
+            score = 45
+
+        elif visitors < 50000:
+            risk = "HIGH"
+            score = 75
+
+        else:
+            risk = "CRITICAL"
+            score = 95
+
         return {
-            "risk_level": "LOW",
-            "risk_score": 25
+
+            "risk_level": risk,
+            "risk_score": score,
+            "current_visitors": visitors,
+            "last_updated": live["last_updated"]
         }
 
 dashboard_controller = (

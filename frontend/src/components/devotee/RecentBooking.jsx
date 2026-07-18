@@ -101,6 +101,12 @@ export default function RecentBooking({
   };
 
   const statusConfig = getStatusConfig(booking?.status);
+  if (
+    booking &&
+    String(booking.booking_status || booking.status).toUpperCase() === "CANCELLED"
+  ) {
+    return null;
+  }
 
   return (
     <motion.div 
