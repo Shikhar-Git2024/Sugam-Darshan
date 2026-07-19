@@ -6,112 +6,143 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
+import mandala from "../../assets/decorations/mandala.svg";
+import mandala2 from "../../assets/decorations/mandala2.svg";
+
 export default function HowItWorksSection() {
   const steps = [
     {
       number: "01",
       icon: Calendar,
       title: "Choose Your Visit Date",
-      description: "Select your preferred darshan date and time.",
+      description:
+        "Select your preferred darshan date and convenient time slot to begin planning your temple visit.",
     },
     {
       number: "02",
       icon: Brain,
-      title: "System Checks Crowd Data",
-      description: "Our smart system checks the expected visitor volume and line waiting times.",
+      title: "AI Analyzes Crowd",
+      description:
+        "Our intelligent system studies expected visitor numbers, waiting time and crowd conditions.",
     },
     {
       number: "03",
       icon: Sparkles,
-      title: "Get Best Recommendations",
-      description: "Receive the best time slots for a completely smooth and comfortable darshan.",
+      title: "Receive Best Recommendation",
+      description:
+        "Get the most suitable time slot for a smooth, comfortable and peaceful darshan experience.",
     },
     {
       number: "04",
       icon: CheckCircle2,
-      title: "Book & Travel Safely",
-      description: "Confirm your temple visit pass and travel with complete peace of mind.",
+      title: "Confirm & Visit",
+      description:
+        "Book your preferred slot and travel confidently with less waiting and better planning.",
     },
   ];
 
   return (
-    <section id="how-it-works" className="relative py-32 overflow-hidden bg-slate-950 text-slate-100 selection:bg-violet-500/30">
-      {/* Premium Tech Grid Mesh Background Layer - Matches Rest of Dashboard */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-70 pointer-events-none" />
+    <section
+      id="how-it-works"
+      className="relative overflow-hidden py-24 bg-[#FFFBF5]"
+    >
+      {/* Decorative Background - Standardized Opacity */}
+      <img
+        src={mandala}
+        alt=""
+        className="absolute -top-24 -left-24 w-[600px] opacity-[0.1] pointer-events-none select-none"
+      />
+      <img
+        src={mandala2}
+        alt=""
+        className="absolute -bottom-20 -right-24 w-[600px] opacity-[0.1] pointer-events-none select-none"
+      />
+      <div className="absolute top-32 left-1/2 -translate-x-1/2 h-80 w-80 rounded-full bg-[#FAD6A5]/20 blur-3xl pointer-events-none" />
 
-      {/* Cyberpunk Dynamic Ambient Glow Components */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-violet-600/10 blur-[150px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-cyan-600/10 blur-[180px] rounded-full pointer-events-none" />
-
-      <div className="relative max-w-7xl mx-auto px-6">
-
-        {/* Dynamic Telemetry Header Bar */}
+      <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
+        {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 25 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-20 border-b border-slate-800/60 pb-10"
+          className="flex flex-col items-center text-center mb-20"
         >
-          <div>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white">
-              How It <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-indigo-200 to-cyan-400">Works</span>
-            </h2>
-            <p className="mt-3 text-slate-400 max-w-xl text-sm md:text-base">
-              Planning your peaceful darshan takes less than a minute.
-            </p>
+          {/* Refined Badge */}
+          <div className="inline-flex items-center gap-2 rounded-full bg-[#FAD6A5]/20 border border-[#FAD6A5]/40 px-5 py-2 text-[#92400E] font-bold text-xs uppercase tracking-wider mb-6 shadow-sm">
+            <Sparkles size={14} className="animate-spin [animation-duration:8s]" />
+            Easy Booking Journey
           </div>
-          <div className="self-start lg:self-auto">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-slate-900 border border-slate-800 text-slate-400 text-[10px] font-mono font-bold tracking-wider uppercase">
-              Simple Process
-            </span>
-          </div>
+
+          {/* Heading */}
+          <h2 className="text-4xl md:text-5xl font-black text-[#5D3A1A] leading-tight">
+            Plan Your Darshan
+            <br />
+            <span className="text-[#92400E]">In Four Simple Steps</span>
+          </h2>
+
+          {/* Description */}
+          <p className="mt-6 max-w-3xl text-lg leading-8 text-[#8B7355] font-medium">
+            Sugam Darshan helps devotees plan a peaceful temple visit by 
+            recommending the best time based on crowd predictions and slot 
+            availability.
+          </p>
         </motion.div>
 
-        {/* High-Density Display Dashboard Matrix Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {steps.map((step, index) => {
-            const Icon = step.icon;
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {steps.map((step, index) => {
+          const Icon = step.icon;
+          return (
+            <motion.div
+              key={step.number}
+              initial={{ opacity: 0, y: 35 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.12 }}
+              whileHover={{ y: -8 }}
+              className="group relative overflow-hidden rounded-[28px] border border-[#FAD6A5]/40 bg-[#FFFBF5]/80 backdrop-blur-md p-8 shadow-[0_20px_45px_rgba(217,119,6,0.08)] hover:shadow-[0_30px_60px_rgba(217,119,6,0.15)] transition-all duration-300 flex flex-col justify-between"
+            >
+              {/* Decorative Glow */}
+              <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-[#FAD6A5]/20 blur-3xl opacity-50 group-hover:opacity-80 transition-all" />
 
-            return (
-              <motion.div
-                key={step.number}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                whileHover={{ y: -6 }}
-                className="group relative overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/50 backdrop-blur-xl p-6 hover:bg-slate-900/80 hover:border-violet-500/40 transition-colors duration-300 flex flex-col justify-between"
-              >
-                <div>
-                  {/* Step Number Display */}
-                  <div className="flex items-start justify-between mb-8">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500/20 to-purple-500/5 border border-violet-500/20 flex items-center justify-center text-violet-400 group-hover:scale-110 transition-transform duration-300">
-                      <Icon size={22} />
-                    </div>
-                    <span className="text-3xl font-black font-mono text-slate-800 group-hover:text-violet-500/20 transition-colors select-none">
-                      {step.number}
-                    </span>
-                  </div>
+              {/* Step Number - Refined for elegance */}
+              <div className="absolute top-8 right-8 text-5xl font-black text-[#FAD6A5]/60 select-none">
+                {step.number}
+              </div>
 
-                  {/* Content Block */}
-                  <p className="text-[10px] font-bold tracking-wider text-slate-500 uppercase font-mono">Step Sequence</p>
-                  <h3 className="text-lg font-black text-white tracking-tight mt-1.5">
-                    {step.title}
-                  </h3>
-                  <p className="mt-2.5 text-slate-400 text-xs leading-relaxed">
-                    {step.description}
-                  </p>
+              {/* Icon */}
+              <div className="relative h-16 w-16 rounded-2xl bg-[#FAD6A5]/30 border border-[#FAD6A5]/60 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300">
+                <Icon size={28} className="text-[#92400E]" />
+              </div>
+
+              {/* Content */}
+              <div className="relative">
+                <h3 className="text-2xl font-black text-[#5D3A1A] tracking-tight">
+                  {step.title}
+                </h3>
+                <p className="mt-4 text-[15px] leading-7 text-[#8B7355] min-h-[120px] font-medium">
+                  {step.description}
+                </p>
+              </div>
+
+              {/* Bottom Area */}
+              <div className="relative mt-8 pt-6 border-t border-[#FAD6A5]/40 flex items-center justify-between">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-[#92400E]">
+                  Step {step.number}
+                </span>
+                <div className="h-10 w-10 rounded-full bg-[#FAD6A5]/20 border border-[#FAD6A5]/50 flex items-center justify-center">
+                  <CheckCircle2 size={18} className="text-[#92400E]" />
                 </div>
-
-                {/* Decorative Bottom Matrix Frame Line */}
-                <div className="mt-6 pt-2 border-t border-slate-800/40 w-full" />
-              </motion.div>
-            );
-          })}
-        </div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
 
       </div>
+
     </section>
+
   );
+
 }

@@ -1,156 +1,421 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+
 import {
   ArrowRight,
   Trophy,
   Mail,
   MapPin,
+  Sparkles,
 } from "lucide-react";
 
 import logo from "../../assets/images/logo.png";
+import mandala from "../../assets/decorations/mandala.svg";
+import mandala2 from "../../assets/decorations/mandala2.svg";
 
 export default function FooterSection() {
   const navigate = useNavigate();
 
   return (
-    <footer id="contact" className="relative bg-slate-950 text-slate-100 pt-32 pb-12 overflow-hidden selection:bg-violet-500/30">
-      {/* Premium Tech Grid Mesh Background Layer */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_100%,#000_70%,transparent_100%)] opacity-60 pointer-events-none" />
+    <footer
+      id="contact"
+      className="relative overflow-hidden bg-[#FFF8F1] pt-24 pb-10"
+    >
 
-      {/* Cyberpunk Dynamic Ambient Glow Components */}
-      <div className="absolute bottom-0 left-1/4 w-[600px] h-[400px] bg-violet-600/10 blur-[150px] rounded-full pointer-events-none" />
-      <div className="absolute top-12 right-1/4 w-[500px] h-[400px] bg-amber-500/5 blur-[130px] rounded-full pointer-events-none" />
+      {/* Decorative Background */}
 
-      <div className="relative max-w-7xl mx-auto px-6">
+      <img
+        src={mandala}
+        alt=""
+        className="absolute -top-28 -left-28 w-[620px] opacity-[0.1] pointer-events-none select-none"
+      />
 
-        {/* Call-to-Action Board — High Fidelity Command Module Look */}
+      <img
+        src={mandala2}
+        alt=""
+        className="absolute bottom-0 -left-24 w-[600px] opacity-[0.1] pointer-events-none select-none"
+      />
+
+      <img
+        src={mandala2}
+        alt=""
+        className="absolute bottom-0 -right-24 w-[600px] opacity-[0.1] pointer-events-none select-none"
+      />
+
+      <div className="absolute top-32 left-1/2 -translate-x-1/2 h-96 w-96 rounded-full bg-orange-100 blur-[140px] opacity-40 pointer-events-none" />
+
+      <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
+
+        {/* CTA */}
+
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 35 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          className="relative overflow-hidden rounded-3xl border border-slate-800/80 bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 p-8 md:p-12 shadow-2xl mb-24 group"
+          transition={{ duration: .7 }}
+          className="
+            relative
+            overflow-hidden
+            rounded-[36px]
+            border
+            border-[#FAD6A5]/50
+            bg-gradient-to-br
+            from-white
+            via-[#FFF8EF]
+            to-[#FFF2E3]
+            shadow-[0_25px_60px_rgba(217,119,6,0.10)]
+            p-10
+            md:p-14
+            mb-24
+          "
         >
-          {/* Internal Premium Node Backlight */}
-          <div className="absolute -right-20 -top-20 w-[400px] h-[400px] bg-violet-500/10 blur-[100px] rounded-full pointer-events-none" />
 
-          <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+          <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-orange-100 blur-3xl opacity-70" />
+
+          <div className="relative flex flex-col lg:flex-row items-center justify-between gap-10">
+
             <div className="max-w-2xl">
-              <h2 className="text-3xl md:text-5xl font-black tracking-tight text-white">
-                Ready For A <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-indigo-200 to-cyan-400">Smarter Darshan?</span>
+
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#FAD6A5]/50 bg-[#FDE7C6] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#92400E]">
+
+                <Sparkles
+                  size={14}
+                  className="animate-spin [animation-duration:5s]"
+                />
+
+                Plan Smarter
+
+              </div>
+
+              <h2 className="mt-6 text-4xl md:text-5xl font-black leading-tight text-[#5D3A1A]">
+
+                Ready For A
+
+                <br />
+
+                <span className="text-[#92400E]">
+
+                  Peaceful Darshan?
+
+                </span>
+
               </h2>
-              <p className="mt-4 text-slate-400 text-sm md:text-base leading-relaxed">
-                Take the guesswork out of your temple visit. Receive dynamic crowd timeline advice, schedule safe family timings, and plan an organized pilgrimage journey ahead of time.
+
+              <p className="mt-6 max-w-xl text-lg leading-8 text-[#8B7355]">
+
+                Book your darshan at the right time, avoid long queues,
+                and enjoy a comfortable temple visit with AI-powered
+                crowd recommendations.
+
               </p>
+
             </div>
 
-            {/* Functional Navigational Buttons */}
-            <div className="flex flex-wrap items-center gap-4 shrink-0">
+            <div className="flex flex-wrap gap-4">
+
               <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                whileHover={{
+                  scale: 1.03,
+                }}
+                whileTap={{
+                  scale: .97,
+                }}
                 onClick={() => navigate("/devotee/login")}
-                className="px-6 py-3.5 rounded-xl bg-white text-slate-950 text-sm font-bold shadow-lg transition-all"
+                className="
+                  rounded-xl
+                  bg-[#92400E]
+                  px-8
+                  py-4
+                  font-bold
+                  text-white
+                  shadow-lg
+                  transition-all
+                  hover:bg-[#7C2D12]
+                "
               >
+
                 Plan My Visit
+
               </motion.button>
 
               <motion.a
                 href="#features"
-                whileHover={{ scale: 1.02, x: 2 }}
-                whileTap={{ scale: 0.98 }}
-                className="px-6 py-3.5 rounded-xl border border-slate-800 bg-slate-900/80 text-slate-200 text-sm font-bold flex items-center gap-2 hover:bg-slate-800 transition-all cursor-pointer"
+                whileHover={{
+                  scale: 1.03,
+                }}
+                whileTap={{
+                  scale: .97,
+                }}
+                className="
+                  inline-flex
+                  items-center
+                  gap-2
+                  rounded-xl
+                  border
+                  border-[#FAD6A5]/50
+                  bg-white
+                  px-8
+                  py-4
+                  font-bold
+                  text-[#92400E]
+                  transition-all
+                  hover:bg-[#FFF6EC]
+                "
               >
+
                 Explore Features
-                <ArrowRight size={16} className="text-slate-400" />
+
+                <ArrowRight size={18} />
+
               </motion.a>
+
             </div>
+
           </div>
+
         </motion.div>
 
-        {/* High-Legibility Directory Matrix */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 pb-16 border-b border-slate-800/60">
+        {/* Footer */}
 
-          {/* Matrix Element 01: Brand Console */}
-          <div className="flex flex-col items-start">
-            <div className="flex items-center gap-3">
-              <img src={logo} alt="Sugam Darshan" className="w-10 h-10 object-contain" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 border-t border-[#FAD6A5]/40 pt-14">
+
+          {/* Brand */}
+
+          <div>
+
+            <div className="flex items-center gap-4">
+
+              <img
+                src={logo}
+                alt="Sugam Darshan"
+                className="h-14 w-14 object-contain"
+              />
+
               <div>
-                <h3 className="text-xl font-black tracking-tight text-white">Sugam Darshan</h3>
-                <p className="text-xs font-mono font-bold tracking-widest text-slate-500 uppercase mt-1">Crowd Management System</p>
+
+                <h3 className="text-2xl font-black text-[#5D3A1A]">
+
+                  Sugam Darshan
+
+                </h3>
+
+                <p className="text-sm text-[#92400E]">
+
+                  AI Temple Crowd Intelligence
+
+                </p>
+
               </div>
+
             </div>
-            
-            <p className="mt-5 text-slate-400 text-sm leading-relaxed">
-              An award-winning platform engineered to bring safety, clarity, and comfort to temple travel routines for families everywhere.
+
+            <p className="mt-6 leading-7 text-[#8B7355]">
+
+              Helping devotees experience peaceful darshan through
+              intelligent crowd prediction, smart planning,
+              and better pilgrimage management.
+
             </p>
 
-            <div className="mt-6 inline-flex items-center gap-2 px-3 py-2 rounded-md bg-amber-500/5 border border-amber-500/20 text-amber-400 text-xs font-mono font-bold tracking-wider uppercase">
+            <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#FAD6A5]/50 bg-[#FDE7C6] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#92400E]">
+
               <Trophy size={14} />
-              National Hackathon Winner
-            </div>
+
+              HackShodh 2026 Winner
+
+                        </div>
+
           </div>
 
-          {/* Matrix Element 02: Platform Module Navigation */}
+          {/* Quick Links */}
+
           <div>
-            <h4 className="text-xs font-mono font-bold tracking-widest text-slate-400 uppercase mb-5">
-              Platform Modules
+
+            <h4 className="text-lg font-bold text-[#5D3A1A] mb-6">
+
+              Quick Links
+
             </h4>
-            <ul className="space-y-3 text-sm font-medium text-slate-400">
-              <li><a href="#features" className="hover:text-violet-400 hover:underline underline-offset-4 transition-colors">Core Features</a></li>
-              <li><a href="#forecasting" className="hover:text-violet-400 hover:underline underline-offset-4 transition-colors">Live Crowd Tracking</a></li>
-              <li><a href="#booking" className="hover:text-violet-400 hover:underline underline-offset-4 transition-colors">Smart Entry Booking</a></li>
-              <li><a href="#recommendations" className="hover:text-violet-400 hover:underline underline-offset-4 transition-colors">AI Route Planning</a></li>
+
+            <ul className="space-y-4">
+
+              <li>
+                <a
+                  href="#home"
+                  className="text-[#8B7355] hover:text-[#92400E] transition-colors"
+                >
+                  Home
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="#forecasting"
+                  className="text-[#8B7355] hover:text-[#92400E] transition-colors"
+                >
+                  Crowd Forecast
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="#features"
+                  className="text-[#8B7355] hover:text-[#92400E] transition-colors"
+                >
+                  Features
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="#how-it-works"
+                  className="text-[#8B7355] hover:text-[#92400E] transition-colors"
+                >
+                  How It Works
+                </a>
+              </li>
+
             </ul>
+
           </div>
 
-          {/* Matrix Element 03: Resource Portal */}
+          {/* Platform */}
+
           <div>
-            <h4 className="text-xs font-mono font-bold tracking-widest text-slate-400 uppercase mb-5">
-              Resources
+
+            <h4 className="text-lg font-bold text-[#5D3A1A] mb-6">
+
+              Platform
+
             </h4>
-            <ul className="space-y-3 text-sm font-medium text-slate-400">
-              <li><a href="#temples" className="hover:text-violet-400 hover:underline underline-offset-4 transition-colors">Temple Information</a></li>
-              <li><a href="#festivals" className="hover:text-violet-400 hover:underline underline-offset-4 transition-colors">Festival Calendar</a></li>
-              <li><a href="#updates" className="hover:text-violet-400 hover:underline underline-offset-4 transition-colors">Security Guidelines</a></li>
-              <li><a href="#support" className="hover:text-violet-400 hover:underline underline-offset-4 transition-colors">Devotee Support</a></li>
+
+            <ul className="space-y-4">
+
+              <li className="text-[#8B7355]">
+                Smart Crowd Prediction
+              </li>
+
+              <li className="text-[#8B7355]">
+                AI Slot Recommendation
+              </li>
+
+              <li className="text-[#8B7355]">
+                Temple Queue Management
+              </li>
+
+              <li className="text-[#8B7355]">
+                Safe Darshan Planning
+              </li>
+
             </ul>
+
           </div>
 
-          {/* Matrix Element 04: Communications Connectors */}
+          {/* Contact */}
+
           <div>
-            <h4 className="text-xs font-mono font-bold tracking-widest text-slate-400 uppercase mb-5">
-              Communications
+
+            <h4 className="text-lg font-bold text-[#5D3A1A] mb-6">
+
+              Contact
+
             </h4>
-            <div className="space-y-4 text-sm font-medium text-slate-400">
-              <div className="flex items-center gap-3 group">
-                <div className="w-9 h-9 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-500 group-hover:text-violet-400 transition-colors">
-                  <Mail size={16} />
+
+            <div className="space-y-5">
+
+              <div className="flex items-start gap-4">
+
+                <div className="h-11 w-11 rounded-xl bg-[#FDE7C6] border border-[#FAD6A5]/50 flex items-center justify-center">
+
+                  <Mail
+                    size={18}
+                    className="text-[#92400E]"
+                  />
+
                 </div>
-                <a href="mailto:contact@sugamdarshan.in" className="hover:text-white transition-colors">contact@sugamdarshan.in</a>
+
+                <div>
+
+                  <p className="text-sm text-[#8B7355]">
+
+                    Email
+
+                  </p>
+
+                  <a
+                    href="mailto:sugamdarshan.project@gmail.com"
+                    className="font-semibold text-[#5D3A1A] hover:text-[#92400E]"
+                  >
+
+                    sugamdarshan@gmail.com
+
+                  </a>
+
+                </div>
+
               </div>
 
-              <div className="flex items-center gap-3 group">
-                <div className="w-9 h-9 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-500 group-hover:text-violet-400 transition-colors">
-                  <MapPin size={16} />
+              <div className="flex items-start gap-4">
+
+                <div className="h-11 w-11 rounded-xl bg-[#FDE7C6] border border-[#FAD6A5]/50 flex items-center justify-center">
+
+                  <MapPin
+                    size={18}
+                    className="text-[#92400E]"
+                  />
+
                 </div>
-                <span>Kanpur, Uttar Pradesh</span>
+
+                <div>
+
+                  <p className="text-sm text-[#8B7355]">
+
+                    Location
+
+                  </p>
+
+                  <p className="font-semibold text-[#5D3A1A]">
+
+                    Kanpur, Uttar Pradesh
+
+                  </p>
+
+                </div>
+
               </div>
+
             </div>
+
           </div>
 
         </div>
 
-        {/* Bottom Status / Telemetry Stream */}
-        <div className="mt-12 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-mono text-slate-500">
-          <p>© 2026 Sugam Darshan. All Rights Reserved.</p>
-          <div className="flex items-center gap-2 text-slate-600">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Operational // Protected Pilgrimage Initiative</span>
+        {/* Bottom */}
+
+        <div className="mt-12 border-t border-[#FAD6A5]/80 pt-6">
+
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+
+            <p className="text-sm text-[#8B7355]">
+
+              © 2026 Sugam Darshan. All Rights Reserved.
+
+            </p>
+
+            <p className="text-sm text-[#92400E] font-semibold">
+
+              Built with ❤️ for Devotees
+
+            </p>
+
           </div>
+
         </div>
 
       </div>
+
     </footer>
+
   );
+
 }
