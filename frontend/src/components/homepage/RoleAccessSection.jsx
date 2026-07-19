@@ -1,151 +1,127 @@
 import { motion } from "framer-motion";
-
 import { useNavigate } from "react-router-dom";
 
-import { Users, Shield, ArrowRight, Lock } from "lucide-react";
+import {
+  Users,
+  Shield,
+  Lock,
+  ArrowRight,
+  Sparkles,
+} from "lucide-react";
 
-
+import mandala from "../../assets/decorations/mandala.svg";
+import mandala2 from "../../assets/decorations/mandala2.svg";
 
 export default function RoleAccessSection() {
-
   const navigate = useNavigate();
 
-
-
-  // Added Admin Portal to the portals array
   const portals = [
-
     {
-
       title: "Devotee Portal",
-
       icon: Users,
-
       description:
-
-        "Book your peaceful darshan slots, view crowd timing guidelines, and coordinate a comfortable temple trip for your family.",
-
-      badge: "For Families & Visitors",
-
-      accentColor: "text-violet-400 border-violet-500/20 bg-violet-500/10",
-
-      glow: "bg-violet-600/10",
-
+        "Book darshan slots, check crowd updates, and plan a smooth temple visit for yourself and your family.",
+      badge: "For Devotees",
+      iconBg: "bg-[#FAD6A5]/30",
+      iconColor: "text-[#92400E]",
+      border: "border-[#FAD6A5]/40",
+      glow: "bg-orange-200/40",
       path: "/devotee/login",
-
     },
 
     {
-
       title: "Authority Portal",
-
       icon: Shield,
-
       description:
-
-        "Monitor live temple complex density numbers, oversee crowd line patterns, and maintain public safety checks in real time.",
-
-      badge: "For Temple Management",
-
-      accentColor: "text-emerald-400 border-emerald-500/20 bg-emerald-500/10",
-
-      glow: "bg-emerald-600/10",
-
+        "Monitor live crowd conditions, manage temple operations, and help ensure a safe darshan experience.",
+      badge: "Temple Staff",
+      iconBg: "bg-[#E8F0E8]",
+      iconColor: "text-[#3E653E]",
+      border: "border-[#CDE0CD]",
+      glow: "bg-green-200/40",
       path: "/authority/login",
-
     },
-    
+
     {
-
       title: "Admin Portal",
-
       icon: Lock,
-
       description:
-
-        "Manage system configurations, user roles, security protocols, and overall platform administration settings.",
-
-      badge: "For Super Admins",
-
-      accentColor: "text-rose-400 border-rose-500/20 bg-rose-500/10",
-
-      glow: "bg-rose-600/10",
-
+        "Manage users, permissions, system settings, and overall platform administration securely.",
+      badge: "Administrator",
+      iconBg: "bg-[#FDECEC]",
+      iconColor: "text-[#991B1B]",
+      border: "border-[#FECACA]",
+      glow: "bg-red-200/40",
       path: "/admin/login",
-
     },
-
   ];
 
-
-
   return (
+    <section
+      id="platform-access"
+      className="relative overflow-hidden py-24 bg-[#FFF8F1]"
+    >
+      {/* Background Decorations */}
 
-    <section id="platform-access" className="relative py-32 overflow-hidden bg-slate-950 text-slate-100 selection:bg-violet-500/30">
+      <img
+        src={mandala}
+        alt=""
+        className="absolute -top-24 -left-24 w-[650px] opacity-[0.1] pointer-events-none select-none"
+      />
 
-      {/* Premium Tech Grid Mesh Background Layer */}
+      <img
+        src={mandala2}
+        alt=""
+        className="absolute -bottom-20 -right-24 w-[620px] opacity-[0.1] pointer-events-none select-none"
+      />
 
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-70 pointer-events-none" />
+      <div className="absolute top-24 left-1/2 -translate-x-1/2 h-80 w-80 rounded-full bg-orange-100/30 blur-3xl pointer-events-none" />
 
+      <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
 
-
-      {/* Dynamic Ambient Glow Component */}
-
-      <div className="absolute top-0 left-1/3 w-[600px] h-[600px] bg-indigo-600/10 blur-[180px] rounded-full pointer-events-none" />
-
-
-
-      <div className="relative max-w-5xl mx-auto px-6">
-
-
-
-        {/* Header Bar with Fully Readable Typography */}
+        {/* Section Header */}
 
         <motion.div
-
-          initial={{ opacity: 0, y: 20 }}
-
+          initial={{ opacity: 0, y: 25 }}
           whileInView={{ opacity: 1, y: 0 }}
-
           viewport={{ once: true }}
-
-          transition={{ duration: 0.6 }}
-
-          className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-16 border-b border-slate-800/60 pb-10"
-
+          transition={{ duration: .6 }}
+          className="flex flex-col items-center text-center mb-16"
         >
 
-          <div>
+          <div className="inline-flex items-center gap-2 rounded-full bg-[#FAD6A5]/30 border border-[#FAD6A5]/50 px-5 py-2 text-[#92400E] font-bold text-xs uppercase tracking-wider mb-6">
 
-            <h2 className="text-3xl md:text-5xl font-black tracking-tight text-white">
+            <Sparkles size={14} className="animate-spin [animation-duration:5s]"/>
 
-              Dedicated <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-indigo-200 to-cyan-400">Access Portals</span>
-
-            </h2>
-
-            <p className="mt-4 text-slate-400 max-w-xl text-base md:text-lg leading-relaxed">
-
-              Custom tools designed to provide a completely safe and organized experience for everyone.
-
-            </p>
+            Choose Your Portal
 
           </div>
 
-          <div className="self-start sm:self-auto shrink-0">
+          <h2 className="text-4xl md:text-5xl font-black text-[#5D3A1A] leading-tight">
 
-            <span className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md bg-slate-900 border border-slate-800 text-slate-400 text-xs font-mono font-bold tracking-wider uppercase">
+            Access the
 
-              Platform Access
+            <br />
+
+            <span className="text-[#92400E]">
+
+              Right Portal
 
             </span>
 
-          </div>
+          </h2>
+
+          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-[#8B7355]">
+
+            Whether you're planning your darshan, managing temple operations,
+            or administering the platform, choose the portal that matches your
+            role to continue securely.
+
+          </p>
 
         </motion.div>
 
-
-
-        {/* Balanced 3-Column Grid Layout for Portals */}
+        {/* Portal Cards */}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
@@ -153,47 +129,85 @@ export default function RoleAccessSection() {
 
             const Icon = portal.icon;
 
-
-
             return (
 
               <motion.div
-
                 key={index}
-
-                initial={{ opacity: 0, y: 30 }}
-
+                initial={{ opacity: 0, y: 35 }}
                 whileInView={{ opacity: 1, y: 0 }}
-
                 viewport={{ once: true }}
-
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-
-                whileHover={{ y: -6 }}
-
-                className="group relative overflow-hidden rounded-3xl border border-slate-800/80 bg-slate-900/40 backdrop-blur-xl p-8 hover:bg-slate-900/75 hover:border-slate-700/60 transition-all duration-300 flex flex-col justify-between"
-
+                transition={{
+                  duration: .5,
+                  delay: index * .1,
+                }}
+                whileHover={{
+                  y: -8,
+                }}
+                className={`
+                  group
+                  relative
+                  overflow-hidden
+                  rounded-[28px]
+                  border
+                  ${portal.border}
+                  bg-[#FFFBF5]/90
+                  backdrop-blur-md
+                  shadow-[0_20px_45px_rgba(217,119,6,0.08)]
+                  hover:shadow-[0_25px_60px_rgba(217,119,6,0.15)]
+                  transition-all
+                  duration-300
+                  p-8
+                  flex
+                  flex-col
+                  justify-between
+                `}
               >
 
-                {/* Micro Ambient Glow Layer inside each card */}
+                <div
+                  className={`
+                    absolute
+                    -top-10
+                    -right-10
+                    h-40
+                    w-40
+                    rounded-full
+                    ${portal.glow}
+                    blur-3xl
+                    opacity-40
+                    group-hover:opacity-70
+                    transition-all
+                  `}
+                />
 
-                <div className={`absolute top-0 right-0 w-40 h-40 rounded-full ${portal.glow} blur-[60px] pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-300`} />
-
-
-
-                <div>
-
-                  {/* Icon & Badge Display Header */}
+                <div className="relative">
 
                   <div className="flex items-center justify-between mb-8">
 
-                    <div className={`w-14 h-14 rounded-2xl border flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105 ${portal.accentColor}`}>
+                    <div
+                      className={`
+                        h-14
+                        w-14
+                        rounded-2xl
+                        ${portal.iconBg}
+                        border
+                        ${portal.border}
+                        flex
+                        items-center
+                        justify-center
+                        transition-transform
+                        duration-300
+                        group-hover:scale-110
+                      `}
+                    >
 
-                      <Icon size={26} />
+                      <Icon
+                        size={26}
+                        className={portal.iconColor}
+                      />
 
                     </div>
 
-                    <span className="text-xs font-mono text-slate-400 uppercase tracking-wider bg-slate-950 px-3 py-1.5 rounded-md border border-slate-800/60">
+                    <span className="rounded-full border border-[#FAD6A5]/40 bg-[#FFF5E6] px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#92400E]">
 
                       {portal.badge}
 
@@ -201,53 +215,63 @@ export default function RoleAccessSection() {
 
                   </div>
 
-
-
-                  {/* High-Legibility Content Block */}
-
-                  <h3 className="text-2xl font-bold text-white tracking-tight">
+                  <h3 className="text-2xl font-black text-[#5D3A1A]">
 
                     {portal.title}
 
                   </h3>
 
-                  
-
-                  <p className="mt-4 text-slate-300 text-sm md:text-base leading-relaxed min-h-[72px]">
+                  <p className="mt-4 text-[15px] leading-7 text-[#8B7355] min-h-[120px]">
 
                     {portal.description}
 
                   </p>
+                                  <div className="mt-8 pt-6 border-t border-[#FAD6A5]/40 flex items-center justify-between">
 
-                </div>
+                    <span className="text-xs font-semibold uppercase tracking-wider text-[#8B7355]">
 
+                      Secure Access
 
+                    </span>
 
-                {/* Dashboard Action Area linked to Routing State */}
+                    <motion.button
+                      whileHover={{ x: 4 }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={() => navigate(portal.path)}
+                      className="
+                        inline-flex
+                        items-center
+                        gap-2
+                        rounded-xl
+                        bg-[#92400E]
+                        px-5
+                        py-3
+                        text-sm
+                        font-bold
+                        text-white
+                        shadow-lg
+                        transition-all
+                        duration-300
+                        hover:bg-[#7C2D12]
+                        hover:shadow-xl
+                      "
+                    >
 
-                <div className="mt-10 pt-6 border-t border-slate-800/60 flex items-center justify-between">
+                      Continue
 
-                  <span className="text-xs font-mono text-slate-500 uppercase tracking-wide">Secure Access</span>
+                      <ArrowRight
+                        size={16}
+                        className="
+                          text-[#FAD6A5]
+                          transition-transform
+                          duration-300
+                          group-hover:translate-x-1
+                        "
+                      />
 
-                  
+                    </motion.button>
 
-                  <motion.button
-
-                    whileHover={{ x: 4 }}
-
-                    whileTap={{ scale: 0.98 }}
-
-                    onClick={() => navigate(portal.path)}
-
-                    className="inline-flex items-center gap-2 text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 border border-slate-800 px-5 py-2.5 rounded-xl transition-colors duration-200"
-
-                  >
-
-                    Enter Portal
-
-                    <ArrowRight size={16} className="text-slate-400 group-hover:text-white transition-colors" />
-
-                  </motion.button>
+                  </div>
 
                 </div>
 
@@ -258,8 +282,6 @@ export default function RoleAccessSection() {
           })}
 
         </div>
-
-
 
       </div>
 

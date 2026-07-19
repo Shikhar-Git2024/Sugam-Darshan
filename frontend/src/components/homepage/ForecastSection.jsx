@@ -22,6 +22,9 @@ import {
   ArrowDownRight
 } from "lucide-react";
 
+import mandala from "../../assets/decorations/mandala.svg";
+import mandala2 from "../../assets/decorations/mandala2.svg";
+
 export default function ForecastSection() {
   const [forecastData, setForecastData] = useState([]);
 
@@ -40,14 +43,18 @@ export default function ForecastSection() {
 
   if (!forecastData.length) {
     return (
-      <section className="py-32 bg-slate-950 flex items-center justify-center min-h-[500px]">
-        <div className="flex flex-col items-center gap-4">
-          <BrainCircuit className="w-8 h-8 text-violet-500 animate-pulse" />
-          <p className="text-slate-400 font-medium tracking-widest text-xs uppercase">Analyzing Crowd Trends...</p>
-        </div>
-      </section>
+        <section className="py-24 bg-[#FFF8F1] flex items-center justify-center min-h-[450px]">
+            <div className="flex flex-col items-center gap-4">
+                <Sparkles
+                    className="w-8 h-8 text-orange-600 animate-pulse"
+                />
+                <p className="text-orange-700 font-semibold">
+                    Loading crowd forecast...
+                </p>
+            </div>
+        </section>
     );
-  }
+}
 
   const bestDay = [...forecastData].sort((a, b) => a.crowd - b.crowd)[0];
   const peakDay = [...forecastData].sort((a, b) => b.crowd - a.crowd)[0];
@@ -59,12 +66,12 @@ export default function ForecastSection() {
   function CustomTooltip({ active, payload, label }) {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-slate-900/90 border border-slate-700/60 backdrop-blur-md rounded-xl p-4 shadow-2xl min-w-[150px]">
+        <div className="bg-[#FFFDF9] border border-orange-200 backdrop-blur-md rounded-xl p-4 shadow-2xl min-w-[150px]">
           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Date</p>
-          <p className="font-bold text-white text-sm">{label}</p>
-          <div className="mt-2.5 pt-2 border-t border-slate-800 flex items-center justify-between gap-4">
-            <span className="text-xs text-slate-400">Expected Devotees:</span>
-            <span className="text-violet-400 font-mono font-bold text-xs">
+          <p className="font-bold text-orange-900 text-sm">{label}</p>
+          <div className="mt-2.5 pt-2 border-t border-orange-100 flex items-center justify-between gap-4">
+            <span className="text-xs text-slate-600">Expected Devotees:</span>
+            <span className="text-orange-700 font-mono font-bold text-xs">
               {payload[0].value.toLocaleString()}
             </span>
           </div>
@@ -75,34 +82,52 @@ export default function ForecastSection() {
   }
 
   return (
-    <section id="forecast" className="relative py-32 overflow-hidden bg-slate-950 text-slate-100 selection:bg-violet-500/30">
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_100%,#000_70%,transparent_100%)] opacity-50" />
-      <div className="absolute top-1/2 right-1/4 w-[500px] h-[500px] bg-indigo-500/5 blur-[140px] rounded-full pointer-events-none" />
+    <section id="forecast" className="relative py-24 overflow-hidden bg-gradient-to-br from-[#FFFDF8] via-[#FFF8EF] to-[#FFF3E3]">
+    {/* Mandalas - using fixed, clean utility classes */}
+    <img
+      src={mandala}
+      alt=""
+      className="absolute -top-20 -left-20 w-[600px] opacity-[0.1] pointer-events-none select-none z-0"
+    />
+    <img
+      src={mandala2}
+      alt=""
+      className="absolute bottom-0 -right-20 w-[600px] opacity-[0.1] pointer-events-none select-none z-0"
+    />
+    <div className="absolute top-20 left-1/2 -translate-x-1/2 h-80 w-80 rounded-full bg-orange-100/30 blur-3xl pointer-events-none" />
 
-      <div className="relative max-w-7xl mx-auto px-6">
+      <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
 
-        {/* Header Block Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="flex flex-col items-center text-center mb-20"
+          className="flex flex-col items-center text-center mb-16 relative z-10"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 font-bold text-[10px] tracking-widest uppercase mb-4">
-            <Sparkles size={12} className="animate-spin [animation-duration:4s]" />
-            AI-Powered Crowd Forecasting
+          {/* Refined Badge */}
+          <div className="inline-flex items-center gap-2 rounded-full bg-[#FDE7C6] border border-[#F2C887] px-5 py-2 text-[#92400E] font-bold text-xs uppercase tracking-wider mb-6 shadow-sm">
+            <Sparkles size={14} className="animate-spin [animation-duration:5s]" />
+            7-Day Crowd Forecast
           </div>
-          <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white">
-            Upcoming Crowd <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-indigo-200 to-cyan-400">Density Forecast</span>
+
+          {/* Heading */}
+          <h2 className="text-4xl md:text-5xl font-black text-[#5D3A1A] leading-tight">
+            Plan Your Darshan
+            <br />
+            <span className="text-[#92400E]">
+              with Confidence
+            </span>
           </h2>
-          <p className="mt-4 text-slate-400 max-w-xl text-sm md:text-base">
-            Review predictive footfall models before planning your journey to secure a smooth, comfortable, and timely Darshan experience.
+
+          {/* Description */}
+          <p className="mt-5 text-[#8B7355] max-w-2xl text-lg leading-relaxed font-medium">
+            Check the expected crowd for the next 7 days and choose the best time for a peaceful darshan.
           </p>
         </motion.div>
 
         {/* Dynamic Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-6 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-8 items-stretch">
           
           {/* Left Block Side: Chart Graphic */}
           <motion.div
@@ -110,63 +135,65 @@ export default function ForecastSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
-            className="flex flex-col justify-between bg-slate-900/40 rounded-2xl border border-slate-800/80 backdrop-blur-xl p-6 lg:p-8 h-full"
+            className="relative flex flex-col justify-between rounded-[32px] border border-[#FAD6A5]/40 bg-gradient-to-br from-white via-[#FFF9F1] to-[#FFF3E6] backdrop-blur-md p-8 shadow-[0_20px_50px_rgba(217,119,6,0.08)] transition-all duration-500 hover:shadow-[0_25px_60px_rgba(217,119,6,0.12)]"
           >
-            <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-800/60">
+            {/* Decorative Elements */}
+            <div className="absolute inset-0 rounded-[32px] border border-white/50 pointer-events-none" />
+            
+            {/* Header */}
+            <div className="flex items-center justify-between mb-8 pb-5 border-b border-[#FAD6A5]/30">
               <div>
-                <h3 className="text-lg font-bold text-white tracking-wide">
-                  7-Day Footfall Outlook
+                <h3 className="text-xl font-black text-[#5D3A1A] tracking-tight">
+                  7-Day Crowd Forecast
                 </h3>
-                <p className="text-slate-400 text-xs mt-1">
-                  Predicted fluctuations in visitor patterns across upcoming dates.
+                <p className="text-[#8B7355] text-xs mt-1 font-medium">
+                  Expected number of devotees over the next seven days.
                 </p>
               </div>
-              <div className="flex items-center gap-2 text-xs font-mono font-semibold text-slate-500 bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-lg shrink-0">
-                <Activity size={12} className="text-violet-400" /> Live Predictions
+              <div className="flex items-center gap-2 rounded-full bg-[#FAD6A5]/20 border border-[#FAD6A5]/30 px-4 py-2 text-[#92400E] font-bold text-[10px] uppercase tracking-wider">
+                <Activity size={12} /> Updated Daily
               </div>
             </div>
 
             {/* Recharts Chart View */}
-            <div className="flex-1 min-h-[350px] w-full font-mono text-[11px]">
+            <div className="flex-1 min-h-[350px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={forecastData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="forecastTelemetryGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.25} />
-                      <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0.0} />
+                      <stop offset="5%" stopColor="#D97706" stopOpacity={0.2} />
+                      <stop offset="100%" stopColor="#D97706" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} opacity={0.3} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#FAD6A5" vertical={false} opacity={0.3} />
                   <XAxis 
                     dataKey="day" 
                     axisLine={false} 
                     tickLine={false} 
-                    tick={{ fill: '#94a3b8' }}
+                    tick={{ fill: "#8B7355", fontSize: 12, fontWeight: 600 }}
                     dy={10}
                   />
                   <YAxis 
                     axisLine={false} 
-                    tickLine={false} 
-                    tick={{ fill: '#64748b' }} 
+                    tickLine={false}
+                    tickFormatter={(value) => `${value >= 1000 ? (value / 1000).toFixed(0) + 'k' : value}`}
+                    tick={{ fill: "#A16207", fontSize: 10, fontWeight: 600 }}
                     dx={-5}
                   />
                   <Tooltip content={<CustomTooltip />} />
                   <Area
                     type="monotone"
                     dataKey="crowd"
-                    stroke="#8B5CF6"
+                    stroke="#D97706"
                     strokeWidth={3}
                     fill="url(#forecastTelemetryGrad)"
-                    isAnimationActive={true}
-                    animationDuration={1500}
-                    activeDot={{ r: 5, strokeWidth: 1, fill: '#ffffff' }}
+                    activeDot={{ r: 6, fill: "#D97706", stroke: "#FFFBF5", strokeWidth: 3 }}
                   />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           </motion.div>
 
-          {/* Right Block Side: Grid Summary Cards */}
           <motion.div
             initial={{ opacity: 0, x: 25 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -174,88 +201,75 @@ export default function ForecastSection() {
             transition={{ duration: 0.7 }}
             className="flex flex-col gap-4 h-full justify-between"
           >
-            {/* Card Element 1: Best Day */}
-            <div className="group relative overflow-hidden rounded-xl border border-slate-800/80 bg-slate-900/30 backdrop-blur-xl p-5 hover:bg-slate-900/60 hover:border-emerald-500/30 transition-all duration-300 flex-1">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-105 transition-transform">
-                  <Calendar size={18} />
+            {[
+              {
+                title: "Best Time",
+                subtitle: "Best Day to Visit",
+                val: bestDay.day,
+                icon: Calendar,
+                // Sage Green Theme
+                color: "text-[#3E653E]",
+                bg: "bg-[#E8F0E8]/70",
+                border: "border-[#CDE0CD]",
+                badge: "Low Density",
+                desc: "Lowest expected crowd for a smoother and faster darshan.",
+              },
+              {
+                title: "Busy Day",
+                subtitle: "Peak Expected Crowd",
+                val: peakDay.day,
+                icon: TrendingUp,
+                // Terracotta/Red Theme
+                color: "text-[#991B1B]",
+                bg: "bg-[#FEE2E2]/70",
+                border: "border-[#FECACA]",
+                badge: "Max Surge",
+                desc: "Expect more devotees and longer waiting times.",
+              },
+              {
+                title: "Average Crowd",
+                subtitle: "Daily Footfall",
+                val: averageCrowd.toLocaleString(),
+                icon: Users,
+                // Saffron/Gold Theme
+                color: "text-[#92400E]",
+                bg: "bg-[#FAD6A5]/30",
+                border: "border-[#FAD6A5]/50",
+                badge: "Devotees / Day",
+                desc: "Average number of devotees expected each day.",
+              }
+            ].map((item, i) => (
+              <div key={i} className={`group relative overflow-hidden rounded-[24px] border ${item.border} ${item.bg} backdrop-blur-md p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg flex-1`}>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className={`w-9 h-9 rounded-lg bg-white/50 border ${item.border} flex items-center justify-center ${item.color}`}>
+                    <item.icon size={18} />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold tracking-widest text-[#8B7355] uppercase">{item.title}</p>
+                    <h4 className="font-bold text-[#5D3A1A] text-sm mt-0.5">{item.subtitle}</h4>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-[10px] font-bold tracking-widest text-slate-500 uppercase">Recommended</p>
-                  <h4 className="font-bold text-white text-sm mt-0.5">Best Day to Visit</h4>
+                <div className="flex items-baseline justify-between mt-2">
+                  <span className={`text-2xl font-black ${item.color} tracking-tight`}>{item.val}</span>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${item.border} ${item.color} uppercase tracking-wider`}>{item.badge}</span>
                 </div>
+                <p className="text-[11px] text-[#8B7355] mt-3 border-t border-[#FAD6A5]/30 pt-3">{item.desc}</p>
               </div>
-              <div className="flex items-baseline justify-between mt-2">
-                <span className="text-2xl font-black text-emerald-400 tracking-tight">{bestDay.day}</span>
-                <span className="text-[10px] font-mono text-emerald-400/80 bg-emerald-500/5 border border-emerald-500/10 px-2 py-0.5 rounded flex items-center gap-0.5">
-                  <ArrowDownRight size={10} /> Low Density
-                </span>
+            ))}
+
+            {/* Recommendation Banner - remains anchor */}
+            <div className="rounded-2xl p-6 bg-[#5D3A1A] text-[#FFFBF5] shadow-xl relative overflow-hidden flex-1 flex flex-col justify-center border border-[#92400E]/20">
+              <div className="absolute right-0 bottom-0 translate-x-4 translate-y-4 opacity-[0.03]">
+                <BrainCircuit size={140} />
               </div>
-              <p className="text-[11px] text-slate-500 mt-3 border-t border-slate-800/60 pt-2">
-                This date shows the lowest projected footfall across the current calendar loop.
+              <div className="flex items-center gap-2.5 mb-2">
+                <BrainCircuit size={18} className="text-[#FAD6A5]" />
+                <h3 className="font-bold text-[10px] tracking-widest uppercase text-[#FAD6A5]">Sugam AI Suggestion</h3>
+              </div>
+              <p className="leading-relaxed text-xs text-[#FFFBF5]/80">
+                Visit on <span className="font-bold text-[#FAD6A5] underline underline-offset-4">{bestDay.day}</span> for a more comfortable darshan with shorter queues.
               </p>
             </div>
-
-            {/* Card Element 2: Peak Day */}
-            <div className="group relative overflow-hidden rounded-xl border border-slate-800/80 bg-slate-900/30 backdrop-blur-xl p-5 hover:bg-slate-900/60 hover:border-orange-500/30 transition-all duration-300 flex-1">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-9 h-9 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400 group-hover:scale-105 transition-transform">
-                  <TrendingUp size={18} />
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold tracking-widest text-slate-500 uppercase">Highest Forecast</p>
-                  <h4 className="font-bold text-white text-sm mt-0.5">Peak Expected Crowd</h4>
-                </div>
-              </div>
-              <div className="flex items-baseline justify-between mt-2">
-                <span className="text-2xl font-black text-orange-400 tracking-tight">{peakDay.day}</span>
-                <span className="text-[10px] font-mono text-orange-400/80 bg-orange-500/5 border border-orange-500/10 px-2 py-0.5 rounded">
-                  Max Surge
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-500 mt-3 border-t border-slate-800/60 pt-2">
-                Expect larger queues and extended waiting times at safety screening points.
-              </p>
-            </div>
-
-            {/* Card Element 3: Average Crowd */}
-            <div className="group relative overflow-hidden rounded-xl border border-slate-800/80 bg-slate-900/30 backdrop-blur-xl p-5 hover:bg-slate-900/60 hover:border-violet-500/30 transition-all duration-300 flex-1">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-9 h-9 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400 group-hover:scale-105 transition-transform">
-                  <Users size={18} />
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold tracking-widest text-slate-500 uppercase">Weekly Average</p>
-                  <h4 className="font-bold text-white text-sm mt-0.5">Average Daily Footfall</h4>
-                </div>
-              </div>
-              <div className="flex items-baseline justify-between mt-2">
-                <span className="text-2xl font-black text-violet-400 tracking-tight font-mono">
-                  {averageCrowd.toLocaleString()}
-                </span>
-                <span className="text-[10px] font-mono text-slate-400">Devotees / Day</span>
-              </div>
-              <p className="text-[11px] text-slate-500 mt-3 border-t border-slate-800/60 pt-2">
-                The baseline average attendance calculated across our active forecast horizon.
-              </p>
-            </div>
-
-            {/* Bottom Recommendation Alert Banner */}
-            <div className="rounded-xl p-5 bg-gradient-to-br from-violet-600/90 to-indigo-700/90 text-white shadow-xl relative overflow-hidden flex-1 flex flex-col justify-center">
-              <div className="absolute right-0 bottom-0 translate-x-4 translate-y-4 opacity-10">
-                <BrainCircuit size={120} />
-              </div>
-              <div className="flex items-center gap-2.5 mb-3">
-                <BrainCircuit size={18} className="text-indigo-200" />
-                <h3 className="font-bold text-xs tracking-wider uppercase text-indigo-100">
-                  Smart Planning Tip
-                </h3>
-              </div>
-              <p className="leading-relaxed text-xs text-white/90">
-                Planning your arrival for <span className="font-bold text-cyan-300 underline underline-offset-4">{bestDay.day}</span> will maximize entry speed and significantly reduce overall waiting times inside the complex.
-              </p>
-            </div>
-
           </motion.div>
 
         </div>

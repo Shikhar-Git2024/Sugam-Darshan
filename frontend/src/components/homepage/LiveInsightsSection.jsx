@@ -1,19 +1,21 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
-import { 
-  Users, 
-  CalendarCheck, 
-  Activity, 
-  Clock3, 
-  CloudSun, 
-  RefreshCw, 
-  TrendingUp, 
-  ShieldCheck, 
-  Zap,
-  MapPin
+import {
+  Users,
+  Clock3,
+  Activity,
+  TrendingUp,
+  CloudSun,
+  RefreshCw,
+  MapPin,
+  Eye,
+  CalendarDays
 } from "lucide-react";
 import api from "../../services/api";
+import bannerImage from "../../assets/images/live-insights-banner.png";
+import illustration from "../../assets/images/live-temple-illustration.png";
+import mandala from "../../assets/decorations/mandala.svg";
 
 export default function LiveInsightsSection() {
   const [stats, setStats] = useState(null);
@@ -37,7 +39,12 @@ export default function LiveInsightsSection() {
       setCrowd(crowdResponse.data || {});
       setWeather({
         temperature: Math.round(weatherResponse.data?.current?.temperature_2m || 0),
-        condition: "Clear Sky",
+        condition:
+          weatherResponse.data?.current?.temperature_2m > 35
+            ? "Hot"
+            : weatherResponse.data?.current?.temperature_2m > 28
+            ? "Pleasant"
+            : "Cool",
       });
     } catch (error) {
       // Ignore errors generated intentionally by aborting the request
@@ -73,7 +80,7 @@ export default function LiveInsightsSection() {
 
   if (!stats || !crowd) {
     return (
-      <section className="py-32 bg-slate-950 flex items-center justify-center min-h-[600px]">
+      <section className="py-32 relative py-28 overflow-hidden bg-[#fffaf2] flex items-center justify-center min-h-[600px]">
         <div className="flex flex-col items-center gap-4">
           <RefreshCw className="w-8 h-8 text-violet-500 animate-spin" />
           <p className="text-slate-400 font-medium tracking-widest text-xs uppercase">Initializing Telemetry Stream...</p>
@@ -82,197 +89,285 @@ export default function LiveInsightsSection() {
     );
   }
 
-  const visitorsVal = stats.total_visitors ? Number(stats.total_visitors).toLocaleString() : "0";
-  const bookingsVal = stats.active_bookings ? Number(stats.active_bookings).toLocaleString() : "0";
-  const statusVal = crowd.status ? String(crowd.status).toUpperCase() : "UNKNOWN";
-  const waitVal = crowd.wait_time ? `${String(crowd.wait_time)} Min` : "0 Min";
   const tempVal = weather ? `${weather.temperature}°C` : "--";
 
+  const status = (crowd.status || "").toUpperCase();
+
+  const statusConfig = {
+    LOW: {
+      bg: "bg-emerald-50",
+      border: "border-emerald-200",
+      text: "text-emerald-700",
+      badge: "bg-emerald-100 text-emerald-700",
+    },
+    MODERATE: {
+      bg: "bg-yellow-50",
+      border: "border-yellow-200",
+      text: "text-yellow-700",
+      badge: "bg-yellow-100 text-yellow-700",
+    },
+    HIGH: {
+      bg: "bg-orange-50",
+      border: "border-orange-200",
+      text: "text-orange-700",
+      badge: "bg-orange-100 text-orange-700",
+    },
+    CRITICAL: {
+      bg: "bg-red-50",
+      border: "border-red-200",
+      text: "text-red-700",
+      badge: "bg-red-100 text-red-700",
+    },
+  };
+
+  const currentStatus = statusConfig[status] || statusConfig.MODERATE;
+
   return (
-    <section className="relative py-32 overflow-hidden bg-slate-950 text-slate-100 selection:bg-violet-500/30">
-      {/* Premium Tech Grid Mesh Background Layer */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-70" />
-
-      {/* Deep Cyberpunk Dynamic Ambient Glow Components */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-violet-600/10 blur-[150px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-cyan-600/10 blur-[180px] rounded-full pointer-events-none" />
-
-      <div className="relative max-w-7xl mx-auto px-6">
+    <section className="relative pt-0 pb-20 overflow-hidden bg-[#fffaf2]">
+      <img
+        src={mandala}
+        alt=""
+        className="absolute top-50 left-0 w-[700px] opacity-10 pointer-events-none select-none z-0"
+      />
+      <img
+        src={mandala}
+        alt=""
+        className="absolute top-200 right-0 w-[700px] opacity-10 pointer-events-none select-none z-0"
+      />
         
-        {/* Dynamic Telemetry Header Bar */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-20 border-b border-slate-800/60 pb-10">
-          <div>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white">
-              Live Operations <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-indigo-200 to-cyan-400">Intelligence</span>
-            </h2>
-            <p className="mt-3 text-slate-400 max-w-xl text-sm md:text-base">
-              Real-time synchronization matrix monitoring active visitor throughput, wait thresholds, and regional status controls.
-            </p>
-          </div>
+        {/* Section Hero */}
+        <div className="relative overflow-hidden w-full min-h-[380px] flex items-center">
+          <img
+            src={bannerImage}
+            alt="Live Temple Insights"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          {/* Warm, deep overlay for better text contrast */}
+          <div className="absolute inset-0 bg-[#5D3A1A]/60 backdrop-blur-[0.2px]" />
           
-          <div className="flex items-center gap-4 self-start lg:self-auto">
-            <div className="text-right hidden sm:block">
-              <p className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">System Status</p>
-              <p className="text-xs font-semibold text-emerald-400 flex items-center gap-1.5 justify-end mt-0.5">
-                <ShieldCheck size={14} /> Operational
+          <div className="relative z-10 flex items-center px-6 md:px-16 max-w-7xl mx-auto w-full">
+            <div className="max-w-2xl">
+              <h2 className="text-5xl md:text-6xl font-black leading-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-[#FAD6A5] drop-shadow-md">
+                Live Temple Insights
+              </h2>
+              
+              <p className="mt-4 text-[#FFFBF5]/90 text-lg leading-relaxed max-w-lg font-medium drop-shadow-md">
+                Stay updated with real-time crowd conditions, waiting time,
+                expected visitors, and weather information before planning
+                your darshan.
               </p>
+            
+              <div className="flex items-center gap-4 mt-8">
+                <div className="flex items-center gap-3">
+                  {/* Refined Live Indicator */}
+                  <div className="flex items-center gap-2 bg-[#E8F0E8] border border-[#CDE0CD] px-4 py-2 rounded-full shadow-lg">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#4A7C4A] animate-pulse"></span>
+                    <span className="text-[#3E653E] font-bold text-xs uppercase tracking-wider">
+                      Live Status
+                    </span>
+                  </div>
+
+                  {/* Refresh Button */}
+                  <button
+                    onClick={() => loadData()}
+                    disabled={isRefreshing}
+                    className="flex items-center gap-2 rounded-full bg-white/90 backdrop-blur-md text-[#5D3A1A] px-6 py-3 font-semibold border border-[#FAD6A5]/50 shadow-lg hover:bg-white hover:scale-105 transition-all duration-300"
+                  >
+                    <RefreshCw size={18} className={isRefreshing ? "animate-spin" : ""} />
+                    Refresh
+                  </button>
+                </div>
+              </div>
             </div>
-            <button 
-              onClick={() => loadData()}
-              disabled={isRefreshing}
-              className="inline-flex items-center gap-2.5 px-5 py-3 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white font-semibold text-xs tracking-wide transition-all duration-200 active:scale-95 disabled:opacity-50"
-            >
-              <RefreshCw size={14} className={isRefreshing ? "animate-spin text-cyan-400" : "text-slate-400"} />
-              {isRefreshing ? "SYNCING MATRICES..." : "FORCE REFRESH"}
-            </button>
           </div>
         </div>
 
-        {/* High-Density Display Dashboard Matrix Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          
-          {/* Card 1: Registered Users */}
+      <div className="bg-[#fff7ee] py-12">
+        <div className="max-w-7xl mx-auto px-6">
+
+          <div className="grid lg:grid-cols-[1fr_1.1fr] gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}
+              className="relative"
+            >
+              <div className="relative overflow-hidden rounded-[32px] border border-[#FAD6A5]/30 bg-[#FFFBF5]/80 backdrop-blur-md p-3 shadow-[0_20px_50px_rgba(0,0,0,0.08)]">
+                <img
+                  src={illustration}
+                  alt="Temple Crowd"
+                  className="h-[430px] w-full rounded-[24px] object-cover transition-transform duration-700 hover:scale-105"
+                />
+                {/* Subtle gradient overlay to enhance depth */}
+                <div className="absolute inset-3 rounded-[24px] bg-gradient-to-t from-[#5D3A1A]/20 via-transparent to-transparent" />
+              </div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}
+              className="relative bg-[#FFFBF5] rounded-3xl border border-[#FAD6A5] shadow-xl p-6"
+            >
+              <div className="flex items-center justify-between mb-6">
+                  <div>
+                      <h3 className="text-3xl font-black text-[#5D3A1A]">
+                        Real-Time Temple Status
+                      </h3>
+                      <p className="text-[#8B7355] mt-1 font-medium">
+                        Updated directly from the temple monitoring system.
+                      </p>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-full bg-[#E8F0E8] border border-[#CDE0CD] px-4 py-2 shadow-sm">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#4A7C4A] animate-pulse"></span>
+                    <span className="text-[#3E653E] font-bold text-xs uppercase tracking-wider">
+                      Live Status
+                    </span>
+                  </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-5">
+                {/* Card Definition Helper */}
+                {[
+                  {
+                    title: "Current Visitors",
+                    value: crowd.current_visitors?.toLocaleString() || "0",
+                    icon: Users,
+                    bg: "bg-[#FFFBF5]/90", // Creamy Saffron
+                    border: "border-[#FAD6A5]/50",
+                    text: "text-[#5D3A1A]", // Rich Brown
+                    iconBg: "bg-[#FAD6A5]/30",
+                    iconColor: "text-[#B45309]",
+                  },
+                  {
+                    title: "Waiting Time",
+                    value: `${crowd.wait_time} min`,
+                    icon: Clock3,
+                    bg: "bg-[#FDF9F5]/90", // Soft Amber
+                    border: "border-[#FDE68A]/50",
+                    text: "text-[#854D0E]",
+                    iconBg: "bg-[#FDE68A]/30",
+                    iconColor: "text-[#D97706]",
+                  },
+                  {
+                    title: "Crowd Status",
+                    value: crowd.status,
+                    icon: Activity,
+                    bg: currentStatus.bg.replace('50', '50/90'), // Keeps status dynamic
+                    border: currentStatus.border,
+                    text: currentStatus.text,
+                    iconBg: "bg-black/5",
+                    iconColor: currentStatus.text,
+                  },
+                  {
+                    title: "Expected Today",
+                    value: crowd.expected_today?.toLocaleString() || "0",
+                    icon: TrendingUp,
+                    bg: "bg-[#F0F7FF]/90", // Soft Sky
+                    border: "border-[#BAE6FD]/50",
+                    text: "text-[#0C4A6E]",
+                    iconBg: "bg-[#BAE6FD]/30",
+                    iconColor: "text-[#0369A1]",
+                  },
+                ].map((item, idx) => (
+                  <div
+                    key={idx}
+                    className={`group relative overflow-hidden rounded-3xl border ${item.bg} ${item.border} backdrop-blur-md p-6 shadow-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-xl`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-wider text-[#8B7355]">
+                          {item.title}
+                        </p>
+                        <h4 className={`mt-2 text-2xl font-black ${item.text}`}>
+                          {item.value}
+                        </h4>
+                      </div>
+                      <div className={`w-12 h-12 rounded-2xl ${item.iconBg} flex items-center justify-center`}>
+                        <item.icon className={item.iconColor} size={24} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-[#FAD6A5]/30 flex items-center justify-between">
+                {/* Last Updated Section */}
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#FAD6A5]/20 flex items-center justify-center">
+                    <CalendarDays size={18} className="text-[#92400E]" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-[#8B7355]">
+                      Last Updated
+                    </p>
+                    <p className="font-semibold text-[#5D3A1A]">
+                      {crowd.last_updated || "Just now"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Auto Refresh Badge */}
+                <span className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#FAD6A5]/20 border border-[#FAD6A5]/40 text-[#92400E] font-medium text-xs shadow-inner">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#92400E] animate-pulse"></span>
+                  Auto Refresh • 30s
+                </span>
+              </div>
+            </motion.div>
+          </div>
+
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            whileHover={{ y: -6 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="group relative overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/50 backdrop-blur-xl p-6 hover:bg-slate-900/80 hover:border-violet-500/40 transition-colors duration-300"
+            transition={{ duration: 0.7 }}
+            whileHover={{ y: -5 }}
+            className="relative mt-10 rounded-3xl border border-[#FAD6A5]/30 bg-[#FFFBF5]/80 backdrop-blur-md p-8 shadow-[0_20px_50px_rgba(0,0,0,0.05)]"
           >
-            <div className="flex items-start justify-between mb-8">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500/20 to-purple-500/5 border border-violet-500/20 flex items-center justify-center text-violet-400 group-hover:scale-110 transition-transform duration-300">
-                <Users size={22} />
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+              {/* Left */}
+              <div className="flex items-center gap-5">
+                <div className="w-16 h-16 rounded-2xl bg-[#FAD6A5]/30 flex items-center justify-center">
+                  <CloudSun size={34} className="text-[#92400E]" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-black text-[#5D3A1A]">
+                    Weather in Ayodhya
+                  </h3>
+                  <p className="text-[#8B7355] mt-1 font-medium">
+                    Current conditions for your darshan journey.
+                  </p>
+                </div>
               </div>
-              <span className="text-[10px] font-bold tracking-wider text-violet-400/70 bg-violet-500/5 border border-violet-500/10 px-2.5 py-1 rounded-md flex items-center gap-1">
-                <TrendingUp size={12} /> +12.4% MoM
-              </span>
-            </div>
-            <p className="text-xs font-bold tracking-widest text-slate-400 uppercase">Total Verified Devotees</p>
-            <h3 className="text-4xl font-black text-white tracking-tight mt-2 font-mono">
-              {visitorsVal}
-            </h3>
-            <div className="mt-5 pt-4 border-t border-slate-800/60 flex items-center justify-between text-[11px] text-slate-500">
-              <span>DB Ledger Sync: Live</span>
-              <span className="font-mono text-slate-400">Target 5M</span>
-            </div>
-          </motion.div>
 
-          {/* Card 2: Active Bookings */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            whileHover={{ y: -6 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="group relative overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/50 backdrop-blur-xl p-6 hover:bg-slate-900/80 hover:border-blue-500/40 transition-colors duration-300"
-          >
-            <div className="flex items-start justify-between mb-8">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/5 border border-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform duration-300">
-                <CalendarCheck size={22} />
+              {/* Right */}
+              <div className="flex flex-wrap gap-8">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#8B7355]">
+                    Temperature
+                  </p>
+                  <h3 className="text-4xl font-black text-[#5D3A1A]">
+                    {tempVal}
+                  </h3>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#8B7355]">
+                    Condition
+                  </p>
+                  <h3 className="text-xl font-bold text-[#5D3A1A]">
+                    {weather?.condition}
+                  </h3>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#8B7355]">
+                    Travel Advice
+                  </p>
+                  <span className="inline-block mt-2 rounded-full bg-[#E8F0E8] border border-[#CDE0CD] px-4 py-2 text-[#3E653E] font-bold text-sm">
+                    Good Time for Darshan
+                  </span>
+                </div>
               </div>
-              <span className="text-[10px] font-bold tracking-wider text-blue-400/70 bg-blue-500/5 border border-blue-500/10 px-2.5 py-1 rounded-md">
-                Active Passes
-              </span>
-            </div>
-            <p className="text-xs font-bold tracking-widest text-slate-400 uppercase">Allocated Darshan Slots</p>
-            <h3 className="text-4xl font-black text-white tracking-tight mt-2 font-mono">
-              {bookingsVal}
-            </h3>
-            <div className="mt-5 pt-4 border-t border-slate-800/60 flex items-center justify-between text-[11px] text-slate-500">
-              <span>Token Issuance Rate</span>
-              <span className="text-emerald-400 font-semibold">99.98% Cap</span>
-            </div>
-          </motion.div>
-
-          {/* Card 3: Crowd Status */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            whileHover={{ y: -6 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="group relative overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/50 backdrop-blur-xl p-6 hover:bg-slate-900/80 hover:border-emerald-500/40 transition-colors duration-300"
-          >
-            <div className="flex items-start justify-between mb-8">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-green-500/5 border border-emerald-200/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform duration-300">
-                <Activity size={22} />
-              </div>
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[9px] font-black tracking-widest uppercase">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                AI Vision Stream
-              </div>
-            </div>
-            <p className="text-xs font-bold tracking-widest text-slate-400 uppercase">Premises Density Threshold</p>
-            <div className="flex items-center gap-3 mt-2">
-              <h3 className="text-4xl font-black text-white tracking-tight">
-                {statusVal}
-              </h3>
-            </div>
-            <div className="mt-5 pt-4 border-t border-slate-800/60 flex items-center justify-between text-[11px] text-slate-500">
-              <span>Flow Speed Matrix</span>
-              <span className="text-slate-400 font-medium">Optimal Flow</span>
-            </div>
-          </motion.div>
-
-          {/* Card 4: Current Wait Time */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            whileHover={{ y: -6 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="group relative overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/50 backdrop-blur-xl p-6 hover:bg-slate-900/80 hover:border-orange-500/40 transition-colors duration-300 lg:col-span-1 md:col-span-2"
-          >
-            <div className="flex items-start justify-between mb-8">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500/20 to-amber-500/5 border border-orange-500/20 flex items-center justify-center text-orange-400 group-hover:scale-110 transition-transform duration-300">
-                <Clock3 size={22} />
-              </div>
-              <span className="text-[10px] font-bold tracking-wider text-orange-400/70 bg-orange-500/5 border border-orange-500/10 px-2.5 py-1 rounded-md flex items-center gap-1">
-                <Zap size={11} /> High Priority
-              </span>
-            </div>
-            <p className="text-xs font-bold tracking-widest text-slate-400 uppercase">Avg Queue Processing Delay</p>
-            <h3 className="text-4xl font-black text-white tracking-tight mt-2 font-mono">
-              {waitVal}
-            </h3>
-            <div className="mt-5 pt-4 border-t border-slate-800/60 flex items-center justify-between text-[11px] text-slate-500">
-              <span>Turnstile Throughput</span>
-              <span className="text-slate-400 font-mono">~340 dev/min</span>
-            </div>
-          </motion.div>
-
-          {/* Card 5: Weather Telemetry */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            whileHover={{ y: -6 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="group relative overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/50 backdrop-blur-xl p-6 hover:bg-slate-900/80 hover:border-sky-500/40 transition-colors duration-300 lg:col-span-2 md:col-span-2"
-          >
-            <div className="flex items-start justify-between mb-8">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-500/20 to-cyan-500/5 border border-sky-500/20 flex items-center justify-center text-sky-400 group-hover:scale-110 transition-transform duration-300">
-                <CloudSun size={22} />
-              </div>
-              <span className="text-[10px] font-bold tracking-wider text-sky-400/70 bg-sky-500/5 border border-sky-500/10 px-2.5 py-1 rounded-md flex items-center gap-1">
-                <MapPin size={11} /> Ayodhya Region
-              </span>
-            </div>
-            <p className="text-xs font-bold tracking-widest text-slate-400 uppercase">Environmental Telemetry</p>
-            
-            <div className="flex items-baseline gap-4 mt-2">
-              <h3 className="text-4xl font-black text-white tracking-tight font-mono">
-                {tempVal}
-              </h3>
-              <p className="text-slate-400 font-medium text-sm flex items-center gap-1.5">
-                • {weather ? weather.condition : "Retrieving Weather Sensors"}
-              </p>
-            </div>
-
-            <div className="mt-5 pt-4 border-t border-slate-800/60 flex items-center justify-between text-[11px] text-slate-500">
-              <span>Operational Conditions</span>
-              <span className="text-sky-400 font-semibold">Perfect for Darshan</span>
             </div>
           </motion.div>
 
