@@ -5,7 +5,7 @@ import ForecastSection from "../../components/homepage/ForecastSection";
 import WhySugamSection from "../../components/homepage/WhySugamSection";
 import FeaturesSection from "../../components/homepage/FeaturesSection";
 import HowItWorksSection from "../../components/homepage/HowItWorksSection";
-import HackathonSection from "../../components/homepage/HackathonSection";
+import HackathonSection from "../../components/homepage/HackathonSectionNew";
 import MissionSection from "../../components/homepage/MissionSection";
 import RoleAccessSection from "../../components/homepage/RoleAccessSection";
 import FooterSection from "../../components/homepage/FooterSection";
